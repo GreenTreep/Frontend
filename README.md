@@ -1,1 +1,2 @@
-# Frontend de l'application
+# Front end
+
