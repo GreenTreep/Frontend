@@ -1,19 +1,16 @@
-import React from 'react'
-import { ModeToggle } from '../../hooks/mode-toggle'
-import { Link } from 'react-router-dom'
+import React from 'react';
 
-function Header() {
-  return (
-    <header className='sticky top-0 backdrop-blur p-4 flex justify-between items-center'>
-      <h1 className='text-xl font-bold '>
-       <Link to="/test"> GreenTrip</Link>
-      </h1>
+const Header = () => (
+    <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-8">
+        <header className="flex justify-between items-center">
+            <h1 className="text-5xl font-extrabold tracking-tight">Green Trip</h1>
+            <nav>
+                <ul className="flex space-x-8">
+                    <li><a href="Authentification" className="hover:underline transition duration-300">Connexion</a></li>
+                </ul>
+            </nav>
+        </header>
+    </div>
+);
 
-
-
-      <ModeToggle />
-    </header>
-  )
-}
-
-export default Header
+export default Header;
