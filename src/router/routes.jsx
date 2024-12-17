@@ -2,6 +2,7 @@ import Home from '../pages/Home.jsx';
 import { createBrowserRouter } from 'react-router-dom';
 import Error404 from '../pages/Error404.jsx';
 import BaseLayout from '../layouts/BaseLayouts.jsx';
+import MapPage from '../pages/Map.jsx';
 import Test from '../pages/Test.jsx';
 
 const routes = [
@@ -16,6 +17,10 @@ const routes = [
       {
         path: '/test',
         element: <Test />
+      },
+      {
+        path: '/mapbox',
+        element: <MapPage /> // Assure-toi que le nom du composant est correct
       },
     ]
   },
