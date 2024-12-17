@@ -1,31 +1,75 @@
 // HomeVisitor.jsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Icon } from '@iconify/react';
+import backgroundImage from '../assets/bgi.jpg'; // Assurez-vous que le chemin est correct
+import Section from '@/components/Section';
+import Spacer from '@/components/Spacer';
+import { GlobeDemo } from './GlobeDemo';
 const HomeVisitor = () => {
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col items-center justify-center bg-gradient-to-r p-4">
-      <div className="text-center   max-w-md">
-        <h1 className="text-5xl animate-slidein300 opacity-0 font-bold mb-4">Bienvenue sur Notre Site!</h1>
-        <p className="text-2xl animate-slidein500 opacity-0 font-light mb-6">
-          Page pour les visiteur
-        </p>
-        <div className="flex space-x-4 animate-slidein700 opacity-0 justify-center">
-          <Link
-            to="/login"
-            className="px-4 py-2 text-sm font-medium   bg-blue-600 border border-transparent rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:shadow-outline transition-colors duration-150"
-          >
-            Se Connecter
-          </Link>
-          <Link
-            to="/signup"
-            className="px-4 py-2 text-sm font-medium text-blue-600 bg-white border border-transparent rounded-lg shadow hover:bg-gray-100 focus:outline-none focus:shadow-outline transition-colors duration-150"
-          >
-            S'inscrire
-          </Link>
+    <>
+      {/* Première Section avec l'image de fond */}
+      <section className="relative h-screen bg-bgcolor flex flex-col items-center justify-center  p-4">
+        {/* Image de fond */}
+        <img
+          src={backgroundImage}
+          alt="Background"
+          className="absolute top-0  left-0 w-full h-full object-cover z-[-1] hidden"
+        />
+        <div className="text-center max-w-xl relative z-10">
+          <h1 className="text-5xl font-bold mb-4 text-white">Texte!</h1>
+          <div className="flex space-x-4 animate-slidein500 border backdrop-blur-sm border-green-500 p-6 rounded-md justify-center">
+            <Input placeholder="Recherche 1" />
+            <Input placeholder="Recherche 2" />
+            <Button>
+              <Icon icon="material-symbols:search-rounded" width="24" height="24" />
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* Sections Suivantes */}
+      {/* Section 1 */}
+      <Section
+        title="Bienvenue dans la section suivante"
+        content="Ceci est une autre section de votre page où vous pouvez ajouter plus de contenu. L'image de fond de la première section ne persiste pas ici, permettant aux utilisateurs de défiler et de découvrir d'autres informations."
+        bgColor="bg-white"
+      />
+
+      {/* Spacer */}
+      <GlobeDemo />
+
+      {/* Section 2 */}
+      <Section
+        title="Une autre section"
+        content="Continuez à ajouter du contenu ici. Chaque section peut avoir son propre style et ses propres images de fond si nécessaire."
+        bgColor="bg-secondary"
+      />
+
+      {/* Spacer */}
+      <Spacer />
+
+      {/* Section 3 */}
+      <Section
+        title="Bienvenue dans la section suivante"
+        content="Ceci est une autre section de votre page où vous pouvez ajouter plus de contenu. L'image de fond de la première section ne persiste pas ici, permettant aux utilisateurs de défiler et de découvrir d'autres informations."
+        bgColor="bg-white"
+      />
+
+      {/* Spacer */}
+      <Spacer />
+
+      {/* Section 4 */}
+      <Section
+        title="Une autre section"
+        content="Continuez à ajouter du contenu ici. Chaque section peut avoir son propre style et ses propres images de fond si nécessaire."
+        bgColor="bg-secondary"
+      />
+    </>
   );
 };
 
