@@ -1,149 +1,186 @@
+/* Conteneur principal */
+
+
+
 .map-container {
-    position: relative;
-    height: 80vh;
-    width: 80%;
-    margin: auto;
-    margin-bottom: 8%;
     display: flex;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    overflow: hidden;
+    flex-direction: row;
+    height: 100vh;
+    font-family: Arial, sans-serif;
 }
 
+/* Zone de contrôle (formulaires, boutons) */
 .map-controls {
-    position: relative;
-    background: white;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    width: 300px;
-    z-index: 1000;
+    width: 230px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 }
 
 .map-controls h3 {
-    margin-bottom: 10px;
-    text-align: center;
-    font-size: 1em;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Entrées de texte et suggestions */
+.input-with-suggestions {
+    position: relative;
+    margin-bottom: 20px;
 }
 
 .map-input {
-    margin-bottom: 5px;
-    padding: 8px;
     width: 100%;
-    box-sizing: border-box;
+    padding: 10px 15px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+    margin-bottom: 0;
+    transition: border-color 0.2s ease;
+}
+.map-input2 {
+    width: 100%; /* Ajuste la largeur (peut être fixe ou relative) */
+    height: 40px; /* Définit la hauteur */
+    font-size: 14px; /* Ajuste la taille du texte */
+    /* padding: 10px 15px; Ajoute de l'espacement intérieur pour un rendu agréable  */
+    border: 1px solid #ccc; /* Ajuste les bordures */
+    border-radius: 4px; /* Ajoute des coins arrondis */
+    box-sizing: border-box; /* Inclut le padding dans les dimensions */
+    outline: none;
+    transition: border-color 0.2s ease;
+} 
+
+
+
+.map-input:focus {
+    border-color: #007bff;
 }
 
 .map-suggestions {
-    list-style: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 4px 4px;
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 10;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     padding: 0;
     margin: 0;
-    border: 1px solid #ccc;
-    max-height: 100px;
-    overflow-y: auto;
-    background-color: #fff;
+    list-style: none;
 }
 
 .map-suggestions li {
+    padding: 10px;
+    font-size: 14px;
     cursor: pointer;
-    padding: 5px;
-    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
 }
 
 .map-suggestions li:hover {
-    background-color: #f0f0f0;
+    background-color: #007bff;
+    color: white;
 }
 
+/* Boutons de mode de transport */
 .map-transport {
     display: flex;
-    justify-content: space-around;
-    margin: 10px 0;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
 .map-transport button {
-    background: none;
-    border: none;
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    color: #333;
     cursor: pointer;
-    padding: 5px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.map-transport button:last-child {
+    margin-right: 0;
+}
+
+.map-transport button.active {
+    border-color: #007bff;
+    background-color: #007bff;
+    color: white;
 }
 
 .map-transport button .icon {
-    color: #555;
-    font-size: 24px;
-    transition: color 0.3s ease, transform 0.2s ease;
+    margin-right: 5px;
 }
 
-.map-transport button.active .icon {
-    color: green; /* Couleur verte pour l'icône sélectionnée */
-    transform: scale(1.2);
-}
-
-.map-button {
-    padding: 8px;
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    font-size: 14px;
-}
-
-.map-button:hover {
-    background-color: #0056b3;
-}
-
-.map-display {
-    height: 100%;
-    width: 100%;
-}
-
-.map-info {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #333;
-    padding: 5px;
-    border-top: 1px solid #ddd;
-}
-
+/* Zone des instructions */
 .map-instructions {
-    margin-top: 10px;
-    background: #f9f9f9;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-    max-height: 200px;
-    overflow-y: auto;
+    margin-top: 20px;
 }
 
 .map-instructions h4 {
+    font-size: 16px;
     margin-bottom: 10px;
-    color: #007bff;
+    color: #333;
 }
 
 .map-instructions ul {
     list-style: none;
-    margin: 0;
     padding: 0;
+    margin: 0;
 }
 
 .map-instructions li {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
+    font-size: 14px;
+    margin-bottom: 10px;
 }
 
-.instruction-icon {
+.map-instructions li .instruction-icon {
     margin-right: 10px;
-    color: #007bff;
     font-size: 20px;
+    color: #007bff;
 }
 
-.map-transport .icon {
-    font-size: 24px;
-    color: #555;
+/* Affichage de la carte */
+.map-display {
+    flex: 1;
+    position: relative;
+    background-color: #e9ecef;
 }
 
-.map-transport .active .icon {
-    color: #28a745;
-    transform: scale(1.2);
+.map-display .mapboxgl-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Adaptabilité mobile */
+@media (max-width: 768px) {
+    .map-container {
+        flex-direction: column;
+    }
+
+    .map-controls {
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .map-display {
+        height: calc(100vh - 300px);
+    }
 }
