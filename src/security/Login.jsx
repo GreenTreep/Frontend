@@ -1,15 +1,40 @@
-import React from 'react'
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import React, { useState } from 'react';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/security/auth/AuthContext';
+import api from '@/security/auth/Api';
 
 function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    try {
+      const response = await api.post('/auth/authenticate', {
+        email,
+        password,
+      });
+  
+      console.log('[Login] Authentication successful. Token:', response.data.token);
+      localStorage.setItem('accessToken', response.data.token);
+  
+      const userResponse = await api.get('/user/me'); // Récupère les infos utilisateur
+      console.log('[Login] User data fetched after login:', userResponse.data);
+  
+      setUser(userResponse.data); // Mettez à jour l'état utilisateur
+      alert('Connexion réussie !');
+      navigate('/'); // Redirigez vers la page d'accueil
+      window.location.reload();
+    } catch (error) {
+      console.error('[Login] Error during login:', error);
+      alert('Erreur lors de la connexion. Vérifiez vos identifiants.');
+    }
+  };
+
   return (
     <>
       <div
@@ -27,11 +52,15 @@ function Login() {
               type="email"
               placeholder="Email"
               className="border rounded-lg focus:outline-none p-2"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               type="password"
               placeholder="Mot de passe"
               className="border rounded-lg focus:outline-none p-2"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </CardContent>
 
@@ -48,7 +77,7 @@ function Login() {
               </a>
 
               {/* Bouton Se connecter */}
-              <Button className="rounded-lg">
+              <Button className="rounded-lg" onClick={handleLogin}>
                 Se connecter
               </Button>
             </div>
@@ -69,7 +98,7 @@ function Login() {
         </Card>
       </div>
     </>
-  )
+  );
 }
 
-export default Login
+export default Login;
