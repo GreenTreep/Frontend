@@ -1,7 +1,9 @@
+// GlobeDemo.jsx
+
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-
+import { HeroHighlight, Highlight } from "@/components/ui/hero-highlight"; // Assurez-vous que ces composants existent
 
 import { World } from "@/components/ui/globe.jsx";
 
@@ -393,39 +395,50 @@ export function GlobeDemo() {
     ];
 
     return (
-        (<div
-            className="flex flex-row items-center justify-center py-20 h-screen md:h-auto dark:bg-black bg-white relative w-full">
-            <div
-                className="max-w-7xl mx-auto w-full relative overflow-hidden h-full md:h-[40rem] px-4">
-                <motion.div
-                    initial={{
-                        opacity: 0,
-                        y: 20,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        y: 0,
-                    }}
-                    transition={{
-                        duration: 1,
-                    }}
-                    className="div">
-                    <h2
-                        className="text-center text-xl md:text-4xl font-bold text-black dark:text-white">
-                        We sell soap worldwide
-                    </h2>
-                    <p
-                        className="text-center text-base md:text-lg font-normal text-neutral-700 dark:text-neutral-200 max-w-md mt-2 mx-auto">
-                        This globe is interactive and customizable. Have fun with it, and
-                        don&apos;t forget to share it. :)
-                    </p>
-                </motion.div>
-                <div
-                    className="absolute w-full bottom-0 inset-x-0 h-40 bg-gradient-to-b pointer-events-none select-none from-transparent dark:to-black to-white z-40" />
-
-                <World data={sampleArcs} globeConfig={globeConfig} />
-
+        <div className="flex items-center justify-center py-20 h-screen md:h-auto dark:bg-black bg-white relative w-full">
+            <div className="max-w-6xl mx-auto w-full p-8 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-xl flex flex-col md:flex-row items-center">
+                {/* Section Gauche : Globe et Texte */}
+                <div className="flex flex-col items-center md:items-start w-full md:w-2/3">
+                    {/* Globe */}
+                    <div className="w-full h-96 md:h-[30rem] mb-6">
+                        <World data={sampleArcs} globeConfig={globeConfig} />
+                    </div>
+                    {/* Texte avec HeroHighlight */}
+                    <HeroHighlight>
+                        <motion.div
+                            initial={{
+                                opacity: 0,
+                                y: 20,
+                            }}
+                            animate={{
+                                opacity: 1,
+                                y: 0,
+                            }}
+                            transition={{
+                                duration: 1,
+                            }}
+                            className="w-full text-center md:text-left"
+                        >
+                            <h2 className="text-2xl md:text-4xl font-bold text-black dark:text-white mb-4">
+                                Explorez les Sentiers avec <Highlight className="text-green-500 dark:text-green-400">GreenTrip</Highlight>
+                            </h2>
+                            <p className="text-lg md:text-xl font-normal text-neutral-700 dark:text-neutral-200">
+                                Découvrez des itinéraires de randonnée personnalisés, connectez-vous avec une communauté passionnée et partagez vos aventures. GreenTrip est votre compagnon idéal pour chaque excursion en plein air.
+                            </p>
+                        </motion.div>
+                    </HeroHighlight>
+                </div>
+                {/* Section Droite : Image */}
+                <div className="w-full md:w-1/3 mt-8 md:mt-0 md:ml-8 flex justify-center">
+                    <img
+                        src="https://png.pngtree.com/png-clipart/20230513/ourmid/pngtree-black-mobile-phone-png-image_7097040.png"
+                        alt="Smartphone avec l'application GreenTrip"
+                        className="w-48 md:w-full h-auto rounded-lg shadow-md"
+                    />
+                </div>
+                {/* Gradient Overlay (Optionnel) */}
+                <div className="absolute w-full bottom-0 inset-x-0 h-40 bg-gradient-to-b pointer-events-none select-none from-transparent dark:to-black to-white z-40" />
             </div>
-        </div>)
+        </div>
     );
 }
