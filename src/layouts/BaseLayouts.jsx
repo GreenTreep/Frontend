@@ -5,17 +5,17 @@ import Header from './components/Header.jsx';
 import Background from './Background.jsx';
 
 const BaseLayout = () => {
-  const location = useLocation(); 
-  const isLoginPage = location.pathname === '/login'; 
-  const isRegisterPage = location.pathname === '/register'; 
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+  const isRegisterPage = location.pathname === '/register';
 
   return (
-    <div className="h-screen overflow-auto">
+    <div className="min-h-screen relative">
       <Background />
-      {!isRegisterPage && !isLoginPage && <Header />} {/* Cache le Header si on est sur /login */}
-      <div>
+      {!isRegisterPage && !isLoginPage && <Header />} {/* Affiche le Header sauf sur /login et /register */}
+      <main className="relative z-10"> {/* Ajustez pt-20 selon la hauteur de votre Header */}
         <Outlet />
-      </div>
+      </main>
       {!isRegisterPage && !isLoginPage && <Footer />}
     </div>
   );

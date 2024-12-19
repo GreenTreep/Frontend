@@ -1,0 +1,11 @@
+Model Information:
+* title:	Hiking Backpack
+* source:	https://sketchfab.com/3d-models/hiking-backpack-ffd0bd8f61034f17a90e41fe8f2da003
+* author:	kam (https://sketchfab.com/menhankam)
+
+Model License:
+* license type:	CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+* requirements:	Author must be credited. Modified versions must have the same license. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Hiking Backpack" (https://sketchfab.com/3d-models/hiking-backpack-ffd0bd8f61034f17a90e41fe8f2da003) by kam (https://sketchfab.com/menhankam) licensed under CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
