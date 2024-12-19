@@ -1,4 +1,4 @@
-// BaseLayout.jsx
+// src/BaseLayout.jsx
 
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
@@ -14,8 +14,8 @@ const BaseLayout = () => {
   return (
     <div className="min-h-screen relative">
       <Background />
-      {!isRegisterPage && !isLoginPage && <Header />} {/* Cache le Header si on est sur /login */}
-      <main className="relative z-10">
+      {!isRegisterPage && !isLoginPage && <Header />} {/* Affiche le Header sauf sur /login et /register */}
+      <main className="relative z-10"> {/* Ajustez pt-20 selon la hauteur de votre Header */}
         <Outlet />
       </main>
       {!isRegisterPage && !isLoginPage && <Footer />}

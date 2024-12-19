@@ -7,7 +7,7 @@ import { ThemeProvider } from "./hooks/theme-provider.jsx";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="relative h-full w-full overflow-x-hidden  dark:bg-slate-950">
+      <div className="relative h-full w-full overflow-x-hidden ">
         <RouterProvider router={router} />
       </div>
     </ThemeProvider>
