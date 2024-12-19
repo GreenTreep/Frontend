@@ -10,7 +10,7 @@ import { FeaturesSectionDemo } from '@/components/landing/FeaturesSectionDemo';
 import ReviewsCarousel from '@/components/landing/ReviewsCarousel';
 import AnimatedSection from '@/components/landing/AnimatedSection';
 import Typewriter from 'typewriter-effect';
-import { FeaturesSectionDemo as Sd } from '../components/landing/FeaturesSection';
+import { FeaturesSectionDemo as Sd } from '@/components/landing/FeaturesSection';
 
 const HomeVisitor = () => {
   return (
