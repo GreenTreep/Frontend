@@ -1,5 +1,3 @@
-// src/components/Header.jsx
-
 import React from 'react';
 import { ModeToggle } from '../../hooks/mode-toggle.jsx';
 import { Link } from 'react-router-dom';
