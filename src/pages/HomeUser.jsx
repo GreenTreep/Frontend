@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react';
 import backgroundImage from '../assets/bgi.jpg'; // Assurez-vous que le chemin est correct
 import Section from '@/components/Section';
 import Spacer from '@/components/Spacer';
-import { GlobeDemo } from './GlobeDemo';
+import { GlobeDemo } from '@/components/landing/GlobeDemo';
 
 function HomeUser() {
   return (
