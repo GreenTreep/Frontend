@@ -1,4 +1,4 @@
-// Header.jsx
+// src/components/Header.jsx
 
 import React from 'react';
 import { ModeToggle } from '../../hooks/mode-toggle.jsx';
@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 
 const Header = () => (
-    <div className="bg-transparent p-4">
-        <header className="flex justify-between items-center">
+    <header className="top-0 w-full bg-transparent p-4 shadow-md backdrop-blur">
+        <div className="flex justify-between items-center max-w-7xl mx-auto">
             <Link to="/test">
-                <p className="text-3xl text-bgcolor font-extrabold tracking-tight">GreenTrip</p>
+                <p className="text-3xl dark:text-green-400 text-primary font-extrabold tracking-tight">GreenTrip</p>
             </Link>
 
             <div className="flex items-center">
@@ -18,8 +18,8 @@ const Header = () => (
                 </Link>
                 <ModeToggle />
             </div>
-        </header>
-    </div>
+        </div>
+    </header>
 );
 
 export default Header;
