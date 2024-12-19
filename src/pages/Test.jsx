@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import '../index.css';
 
 import HeroSection from '../components/ui/HeroSection.jsx';
-import MapSection from '../components/ui/MapSection';
 
 function Test() {
   return (
@@ -11,7 +10,6 @@ function Test() {
     <Link to="/">Retour à l'accueil</Link>
 
       <HeroSection />
-      <MapSection />
 
     </>
   )
