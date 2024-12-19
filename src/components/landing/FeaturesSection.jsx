@@ -205,7 +205,7 @@ export const SkeletonTwo = () => {
 export const SkeletonThree = () => {
   return (
     <Link
-      to="https://www.youtube.com/watch?v=RPa3_AD1_Vs"
+      to="https://www.youtube.com/watch?v=PyQQJWmV1LE"
       target="__blank"
       className="relative flex gap-10 h-full group/img">
       <div
