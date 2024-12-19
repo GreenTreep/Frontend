@@ -8,8 +8,6 @@ import MapPage from '../components/ui/MapBoxMap.jsx';
 function Test() {
     return (
         <>
-            <Link to="/"> <Icon icon="material-symbols:arrow-back" width="24" height="24"/></Link>
-
             <HeroSection />
             <MapPage />
 
