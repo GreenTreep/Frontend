@@ -1,0 +1,11 @@
+Model Information:
+* title:	Hiking Boots LOWPOLY
+* source:	https://sketchfab.com/3d-models/hiking-boots-lowpoly-1f25fa279bdc4f87b1374566e9e62923
+* author:	EFX (https://sketchfab.com/evan4129)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Hiking Boots LOWPOLY" (https://sketchfab.com/3d-models/hiking-boots-lowpoly-1f25fa279bdc4f87b1374566e9e62923) by EFX (https://sketchfab.com/evan4129) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
