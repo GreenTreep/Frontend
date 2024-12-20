@@ -18,15 +18,15 @@ const routes = [
         path: '/test',
         element: <Test />
       },
-      {
-        path: '/mapbox',
-        element: <MapPage /> // Assure-toi que le nom du composant est correct
-      },
     ]
   },
   {
     path: '*',
     element: <Error404 />
+  },
+  {
+    path: '/mapbox',
+    element: <MapPage /> // Assure-toi que le nom du composant est correct
   }
 ];
 
