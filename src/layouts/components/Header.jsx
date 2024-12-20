@@ -26,7 +26,7 @@ const Header = () => {
     };
 
     return (
-        <header className="top-0 w-screen bg-transparent p-4 shadow-md backdrop-blur">
+        <header className="top-0 w-screen bg-transparent p-4 shadow-md">
             <div className="flex justify-between items-center max-w-7xl mx-auto">
                 <Link to="/mapbox">
                     <p className="text-3xl dark:text-green-400 text-green-700 font-extrabold tracking-tight">GreenTrip</p>

@@ -6,8 +6,21 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import MapDisplay from "@/components/sidebar/MapDisplay";
 import mapboxgl from "mapbox-gl";
 import { useTheme } from "@/hooks/theme-provider";
+import { useLocation } from "react-router-dom";
 
 mapboxgl.accessToken = "pk.eyJ1Ijoic3lsdmFpbmNvc3RlcyIsImEiOiJjbTNxZXNtN3cwa2hpMmpxdWd2cndhdnYwIn0.V2ZAp-BqZq6KIHQ6Lu8eAQ";
+
+const fetchCoordinatesFromCity = async (city) => {
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(city)}.json?access_token=${mapboxgl.accessToken}`;
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data.features[0]?.center || null;
+  } catch (error) {
+    console.error(`Erreur lors de la récupération des coordonnées pour ${city}:`, error);
+    return null;
+  }
+};
 
 export default function Page() {
   const [startCoords, setStartCoords] = useState(null);
@@ -15,13 +28,31 @@ export default function Page() {
   const [transportMode, setTransportMode] = useState("driving");
   const [routeInstructions, setRouteInstructions] = useState([]);
   const [pois, setPois] = useState({ hotel: [], restaurant: [], gas_station: [], park: [] });
-
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
-
+  const markersRef = useRef([]); // Stocker les marqueurs pour nettoyage ultérieur
+  const location = useLocation(); // Lire les paramètres de l'URL
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
-  const markersRef = useRef([]); // Stocker les marqueurs pour nettoyage ultérieur
+  const queryParams = new URLSearchParams(location.search);
+  const startCity = queryParams.get("startCity");
+  const endCity = queryParams.get("endCity");
+
+  useEffect(() => {
+    const initializeCoords = async () => {
+      if (startCity) {
+        const start = await fetchCoordinatesFromCity(startCity);
+        setStartCoords(start);
+      }
+      if (endCity) {
+        const end = await fetchCoordinatesFromCity(endCity);
+        setEndCoords(end);
+      }
+    };
+
+    initializeCoords();
+  }, [startCity, endCity]);
+
 
   const fetchRoute = async () => {
     if (!startCoords || !endCoords) return;
@@ -184,7 +215,7 @@ export default function Page() {
             setTransportMode={setTransportMode}
             transportMode={transportMode}
             routeInstructions={routeInstructions}
-            pois={pois} // Ajout des POI dans la sidebar
+            pois={pois}
         />
 
         <SidebarInset>
