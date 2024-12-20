@@ -14,13 +14,14 @@ export default function Page() {
   const [endCoords, setEndCoords] = useState(null);
   const [transportMode, setTransportMode] = useState("driving");
   const [routeInstructions, setRouteInstructions] = useState([]);
+  const [pois, setPois] = useState({ hotel: [], restaurant: [], gas_station: [], park: [] });
 
-  // Utilisation du thème depuis le hook useTheme
   const { theme } = useTheme();
-  const isDarkMode = (theme === "dark");
+  const isDarkMode = theme === "dark";
 
   const mapRef = useRef(null);
   const mapContainerRef = useRef(null);
+  const markersRef = useRef([]); // Stocker les marqueurs pour nettoyage ultérieur
 
   const fetchRoute = async () => {
     if (!startCoords || !endCoords) return;
@@ -49,16 +50,126 @@ export default function Page() {
         mapRef.current.fitBounds([startCoords, endCoords], { padding: 50 });
 
         setRouteInstructions(
-          steps.map((step) => ({
-            instruction: step.maneuver.instruction,
-            type: step.maneuver.type,
-            modifier: step.maneuver.modifier,
-          }))
+            steps.map((step) => ({
+              instruction: step.maneuver.instruction,
+              type: step.maneuver.type,
+              modifier: step.maneuver.modifier,
+            }))
         );
+
+        fetchPois(route); // Rechercher les POI
       }
     } catch (error) {
       console.error("Erreur lors de la récupération de l’itinéraire :", error);
     }
+  };
+
+  const fetchPois = async (geometry) => {
+    if (!geometry) return;
+
+    const bbox = calculateBoundingBox(geometry.coordinates);
+    const categories = ["hotel", "restaurant", "gas_station", "park"];
+    const poisByCategory = { hotel: [], restaurant: [], gas_station: [], park: [] };
+
+    clearMarkers(); // Nettoyer les anciens marqueurs
+
+    for (const category of categories) {
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${category}.json?bbox=${bbox.join(",")}&access_token=${mapboxgl.accessToken}`;
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.features) {
+          const filteredPois = filterPoisByProximity(
+              data.features.map((feature) => ({
+                name: feature.text,
+                coords: feature.geometry.coordinates,
+                category,
+              })),
+              geometry.coordinates,
+              5 // Distance maximale en kilomètres
+          );
+          poisByCategory[category] = filteredPois;
+        }
+      } catch (error) {
+        console.error(`Erreur lors de la récupération des POI pour ${category}:`, error);
+      }
+    }
+
+    setPois(poisByCategory); // Mettre à jour les POI dans le state
+    addMarkers(poisByCategory); // Ajouter les nouveaux marqueurs
+  };
+
+  const filterPoisByProximity = (pois, routeCoordinates, maxDistance) => {
+    return pois.filter((poi) => {
+      return routeCoordinates.some((coordinate) => {
+        const distance = calculateDistance(coordinate, poi.coords);
+        return distance <= maxDistance;
+      });
+    });
+  };
+
+  const calculateDistance = ([lng1, lat1], [lng2, lat2]) => {
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const R = 6371; // Rayon de la Terre en km
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
+  const calculateBoundingBox = (coordinates) => {
+    let minLng = Infinity,
+        minLat = Infinity,
+        maxLng = -Infinity,
+        maxLat = -Infinity;
+
+    coordinates.forEach(([lng, lat]) => {
+      if (lng < minLng) minLng = lng;
+      if (lat < minLat) minLat = lat;
+      if (lng > maxLng) maxLng = lng;
+      if (lat > maxLat) maxLat = lat;
+    });
+
+    return [minLng, minLat, maxLng, maxLat];
+  };
+
+  const clearMarkers = () => {
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+  };
+
+  const addMarkers = (poisByCategory) => {
+    const map = mapRef.current;
+
+    Object.keys(poisByCategory).forEach((category) => {
+      poisByCategory[category].forEach((poi) => {
+        if (!poi.coords || !poi.name) return;
+
+        const marker = new mapboxgl.Marker({
+          color: category === "hotel"
+              ? "blue"
+              : category === "restaurant"
+                  ? "red"
+                  : category === "park"
+                      ? "green"
+                      : "orange",
+        })
+            .setLngLat(poi.coords)
+            .setPopup(
+                new mapboxgl.Popup().setHTML(`
+              <strong>${poi.name}</strong><br>
+              <em>${category}</em>
+            `)
+            )
+            .addTo(map);
+
+        markersRef.current.push(marker);
+      });
+    });
   };
 
   useEffect(() => {
@@ -66,33 +177,34 @@ export default function Page() {
   }, [startCoords, endCoords, transportMode]);
 
   return (
-    <SidebarProvider>
-      <AppSidebar
-        setStartCoords={setStartCoords}
-        setEndCoords={setEndCoords}
-        setTransportMode={setTransportMode}
-        transportMode={transportMode}
-        routeInstructions={routeInstructions}
-      />
+      <SidebarProvider>
+        <AppSidebar
+            setStartCoords={setStartCoords}
+            setEndCoords={setEndCoords}
+            setTransportMode={setTransportMode}
+            transportMode={transportMode}
+            routeInstructions={routeInstructions}
+            pois={pois} // Ajout des POI dans la sidebar
+        />
 
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+            <div className="flex items-center gap-2 px-4">
+              <SidebarTrigger className="-ml-1" />
+            </div>
+          </header>
+          <div className="flex flex-1 flex-col gap-4 pt-0">
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+              <MapDisplay
+                  mapRef={mapRef}
+                  mapContainerRef={mapContainerRef}
+                  startCoords={startCoords}
+                  endCoords={endCoords}
+                  isDarkMode={isDarkMode}
+              />
+            </div>
           </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 pt-0">
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
-            <MapDisplay
-              mapRef={mapRef}
-              mapContainerRef={mapContainerRef}
-              startCoords={startCoords}
-              endCoords={endCoords}
-              isDarkMode={isDarkMode}
-            />
-          </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
   );
 }

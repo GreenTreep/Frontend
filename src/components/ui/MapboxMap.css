@@ -11,7 +11,7 @@
 
 /* Zone de contrôle (formulaires, boutons) */
 .map-controls {
-    width: 230px;
+    width: 330px;
     padding: 20px;
     background-color: #f8f9fa;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -51,7 +51,7 @@
     box-sizing: border-box; /* Inclut le padding dans les dimensions */
     outline: none;
     transition: border-color 0.2s ease;
-} 
+}
 
 
 
@@ -166,6 +166,41 @@
     width: 100%;
     height: 100%;
 }
+
+.pois-category {
+    margin-top: 15px;
+    background: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.pois-category h4 {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.category-icon {
+    margin-right: 5px;
+    font-size: 20px;
+}
+
+.pois-category ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pois-category ul li:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+
+
 
 /* Adaptabilité mobile */
 @media (max-width: 768px) {
