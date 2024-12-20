@@ -13,7 +13,10 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  } from "@/components/ui/dropdown-menu"
+
+import Helper from '@/help/Helper.jsx'
+
 
 const Header = () => {
     const { user, logout } = useAuth();
@@ -31,23 +34,27 @@ const Header = () => {
                 <Link to="/mapbox">
                     <p className="text-3xl dark:text-green-400 text-green-700 font-extrabold tracking-tight">GreenTrip</p>
                 </Link>
+                <div>
+                    {user && user.role === "ADMIN" ? ( // Si l'utilisateur est un admin
+                        <Link to="/help-admin" className="px-2">
+                        <Button className="px-7 py-2">Support</Button>
+                        </Link>
+                    ) : user && user.role === "USER" ? ( // Si l'utilisateur est un utilisateur standard
+                        <Helper/>
+                    ) : null}
+                    </div>
 
-                <div className="flex space-x-3 items-center">
-                    {user ? (
-                        <>
-                           <DropdownMenu className="mt-10" modal={false}>
-                                <DropdownMenuTrigger className="flex items-center space-x-2">
-                                <Button size="icon">
-                                    <CircleUserRound className='' />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="">
-                                    <DropdownMenuLabel>{user.firstName}</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={handleLogout}>Déconnexion</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                            
+
+                <div className="flex items-center">
+                        {user ? (
+                            <>
+                            <DropdownMenu>
+                            <DropdownMenuTrigger className="relative left-[-10px]">{user.firstName}</DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleLogout}>Déconnexion</DropdownMenuItem>
+                            </DropdownMenuContent>                        
                         </>
 
                     ) : (
