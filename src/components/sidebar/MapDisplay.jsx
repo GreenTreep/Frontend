@@ -4,10 +4,10 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css'
 mapboxgl.accessToken = 'pk.eyJ1Ijoic3lsdmFpbmNvc3RlcyIsImEiOiJjbTNxZXNtN3cwa2hpMmpxdWd2cndhdnYwIn0.V2ZAp-BqZq6KIHQ6Lu8eAQ';
 
-const MapDisplay = ({ 
-  mapRef = { current: null }, 
-  mapContainerRef = { current: null }, 
-  isDarkMode 
+const MapDisplay = ({
+  mapRef = { current: null },
+  mapContainerRef = { current: null },
+  isDarkMode
 }) => {
   const [hoveredPOI, setHoveredPOI] = useState(null);
 
@@ -18,7 +18,7 @@ const MapDisplay = ({
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: isDarkMode ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/outdoors-v12',
-        center: [2.3522, 48.8566], 
+        center: [2.3522, 48.8566],
         zoom: 5,
       });
 
@@ -26,7 +26,7 @@ const MapDisplay = ({
 
       map.on('mousemove', (e) => {
         const features = map.queryRenderedFeatures(e.point, {
-          layers: ['poi-label'], 
+          layers: ['poi-label'],
         });
 
         if (features.length > 0) {
@@ -90,7 +90,7 @@ const MapDisplay = ({
           <p style={{ margin: 0, fontSize: '0.85rem', color: '#777' }}>
             {hoveredPOI.type}
           </p>
-          
+
           <p style={{ margin: 0, fontSize: '0.75rem', color: '#aaa' }}>
             {hoveredPOI.country} {hoveredPOI.region && ` - ${hoveredPOI.region}`}
           </p>
