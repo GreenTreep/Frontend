@@ -1,5 +1,8 @@
 # Greentrip Frontend
+## Badges
+[![Quality Gate](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/GreenTreep/Frontend/add_poi/.github/badges/sonar-badge.json&cacheSeconds=60)](https://github.com/GreenTreep/Frontend)
 
+---
 ## Installation
 
 1. Install dependencies:
