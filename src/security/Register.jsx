@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Register() {
   const [firstName, setFirstName] = useState('');
@@ -12,7 +14,6 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({}); // Gestion des erreurs par champ
-  const [generalError, setGeneralError] = useState('');
 
   const navigate = useNavigate();
 
@@ -20,36 +21,38 @@ function Register() {
     const newErrors = {};
     if (!firstName.trim()) newErrors.firstName = 'Le prénom est requis.';
     if (!lastName.trim()) newErrors.lastName = 'Le nom est requis.';
-    if (!email.trim()) newErrors.email = 'L\'email est requis.';
+    if (!email.trim()) newErrors.email = "L'email est requis.";
     if (!password.trim()) newErrors.password = 'Le mot de passe est requis.';
     if (!confirmPassword.trim()) newErrors.confirmPassword = 'La confirmation du mot de passe est requise.';
     if (password !== confirmPassword) newErrors.confirmPassword = 'Les mots de passe ne correspondent pas.';
-  
+
     setErrors(newErrors);
-  
-    if (Object.keys(newErrors).length > 0) return;
-  
+
+    if (Object.keys(newErrors).length > 0) {
+      toast.error('Veuillez corriger les erreurs dans le formulaire.');
+      return;
+    }
+
     try {
-      setGeneralError('');
       await axios.post('http://localhost:8080/api/v1/auth/register', {
         firstName,
         lastName,
         email,
         password,
       });
-      alert('Inscription réussie !');
+      toast.success('Inscription réussie !');
       navigate('/login');
     } catch (error) {
       if (error.response) {
         if (error.response.status === 409) {
-          setGeneralError('Un compte avec cette adresse email existe déjà. Veuillez vous connecter.');
+          toast.error('Un compte avec cette adresse email existe déjà. Veuillez vous connecter.');
         } else if (error.response.status === 500) {
-          setGeneralError('Erreur interne du serveur. Veuillez réessayer plus tard.');
+          toast.error('Erreur interne du serveur. Veuillez réessayer plus tard.');
         } else {
-          setGeneralError('Une erreur est survenue. Veuillez vérifier vos informations.');
+          toast.error('Une erreur est survenue. Veuillez vérifier vos informations.');
         }
       } else {
-        setGeneralError('Impossible de communiquer avec le serveur. Vérifiez votre connexion.');
+        toast.error('Impossible de communiquer avec le serveur. Vérifiez votre connexion.');
       }
     }
   };
@@ -127,9 +130,6 @@ function Register() {
         </CardContent>
 
         <CardFooter className="flex flex-col gap-4">
-          {generalError && (
-            <p className="text-red-500 text-center text-sm">{generalError}</p>
-          )}
           <div className="flex justify-between items-center">
             <a href="/login" className="text-sm text-green-600 hover:underline mr-2">
               Vous avez déjà un compte ?
@@ -140,6 +140,7 @@ function Register() {
           </div>
         </CardFooter>
       </Card>
+      <ToastContainer />
     </div>
   );
 }
