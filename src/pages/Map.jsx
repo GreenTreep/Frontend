@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import '../index.css';
 import { Icon } from '@iconify/react';
 import HeroSection from '../components/ui/HeroSection.jsx';
-import MapPage from '../components/ui/MapBoxMap.jsx';
+import MapPage from '@/components/MapBoxMap.jsx';
 
 function Test() {
     return (
