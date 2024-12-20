@@ -1,0 +1,1845 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2053956",
+                "name": "Sentier des Côteaux",
+                "distance": 409.8067270143721,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7941942,
+                    2.2937109
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2088691",
+                "name": "Grande boucle du Pays de Limours",
+                "distance": 889.0562181224906,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6477339,
+                    2.1536058
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2088695",
+                "name": "GR de Pays du Hurepoix",
+                "distance": 1435.0763870198343,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7500937,
+                    2.166294
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2568762",
+                "name": "Sentier de l'Essonne",
+                "distance": 1813.0838097807698,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.5075787,
+                    1.9914255
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2784888",
+                "name": "La forêt de Carnelle",
+                "distance": 182.30632659903003,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.1190052,
+                    2.3218667
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2832175",
+                "name": "Traversée de Paris n°2",
+                "distance": 209.47243704511686,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.876759,
+                    2.3782462
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2832196",
+                "name": "Traversée de Paris n°3",
+                "distance": 284.4595792973965,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8713252,
+                    2.3856571
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2833258",
+                "name": "Bords de Marne",
+                "distance": 311.71153318289385,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8160798,
+                    2.4201466
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2833278",
+                "name": "Bois de Boulogne",
+                "distance": 109.28864598461494,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8736911,
+                    2.254154
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2866803",
+                "name": "Sentier des forts",
+                "distance": 658.6558708278336,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8038487,
+                    2.3250559
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2866804",
+                "name": "Sentier des îles",
+                "distance": 486.3695618761968,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8845388,
+                    2.2604172
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2866805",
+                "name": "Sentier des buttes",
+                "distance": 464.42216548141596,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.80895,
+                    2.3113016
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2869113",
+                "name": "Sentier des berges",
+                "distance": 434.0636774307156,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.904623,
+                    2.1944302
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2869284",
+                "name": "Sentier des bois",
+                "distance": 399.8257880231595,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8406822,
+                    2.1670669
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/2869321",
+                "name": "Sentier des rus",
+                "distance": 268.5032786533444,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7458158,
+                    2.2875064
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/3492833",
+                "name": "Non spécifié",
+                "distance": 283.09217226489403,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.5816314,
+                    2.264293
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/3509508",
+                "name": "Bords de Canal de l'Ourcq",
+                "distance": 203.11471925434972,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.892832,
+                    2.3879426
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/3513750",
+                "name": "Entre Seine et Sénart",
+                "distance": 124.04067521660595,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6645712,
+                    2.4199255
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/3516268",
+                "name": "Chemin des Marais",
+                "distance": 541.958051309786,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.5160823,
+                    2.3065055
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/3526476",
+                "name": "Sur la Rive Gauche de la Bièvre",
+                "distance": 318.69732844323676,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7775315,
+                    2.2672193
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/3817503",
+                "name": "GRP des Vallées et Forêts Briardes",
+                "distance": 733.085773993624,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6525484,
+                    2.7407329
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/5194526",
+                "name": "Non spécifié",
+                "distance": 901.2622298532808,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.5364463,
+                    2.5473909
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/5835439",
+                "name": "Non spécifié",
+                "distance": 927.0300243315338,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8579777,
+                    2.3496061
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/6581070",
+                "name": "Non spécifié",
+                "distance": 126.25946783931887,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8535923,
+                    2.3471139
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/6598392",
+                "name": "Non spécifié",
+                "distance": 127.67237947889299,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.695527,
+                    2.1630249
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/6611131",
+                "name": "PR 13",
+                "distance": 207.25327939352837,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6360638,
+                    2.2435606
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/6611132",
+                "name": "Non spécifié",
+                "distance": 200.59697473385538,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6816007,
+                    2.1696659
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/6642473",
+                "name": "n°1 La Guyonnerie",
+                "distance": 116.5771529122714,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6970081,
+                    2.1590336
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/7837594",
+                "name": "PR 11",
+                "distance": 137.0341781888737,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7117534,
+                    2.2396981
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/8246670",
+                "name": "Sentier du Cheval",
+                "distance": 154.4649549795381,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8254277,
+                    2.1520816
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/8387706",
+                "name": "Non spécifié",
+                "distance": 550.8873890878921,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.2064318,
+                    2.578358
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/9248973",
+                "name": "Promenade de l'Orge",
+                "distance": 485.7914252168419,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6731629,
+                    2.3597992
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/9356935",
+                "name": "Grand Tour de Paris (03), Magny-en-Vexin - Montagny-Prouvaire",
+                "distance": 566.164639672147,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.1560452,
+                    1.789172
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/10098090",
+                "name": "Sentier des 3 Vallées",
+                "distance": 339.06543227409554,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.752441,
+                    2.2967239
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/10273338",
+                "name": "L'Essonne - De l'Etampois au Val d'Yerres",
+                "distance": 2144.9918976757876,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.5933443,
+                    2.2469997
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/10842716",
+                "name": "Grand Tour de Paris (12), Franchard - Villiers-Saint-Frédéric",
+                "distance": 1840.6699158633508,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8212172,
+                    1.879858
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/11543406",
+                "name": "Le Grand Tour de Villebon",
+                "distance": 156.41833542417214,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6999841,
+                    2.2699382
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/11822114",
+                "name": "Grand Tour de Paris, liaison Pont d’Austerlitz",
+                "distance": 754.3461469420469,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8448434,
+                    2.3658124
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/11894246",
+                "name": "Turonensis, Palaiseau - Rambouillet",
+                "distance": 601.5918712259448,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6385059,
+                    1.837097
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/12087769",
+                "name": "Non spécifié",
+                "distance": 167.59727703957503,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.751803,
+                    2.2818848
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/12088098",
+                "name": "Turonensis par Orléans, Palaiseau - Etréchy",
+                "distance": 522.7220034370375,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.5932026,
+                    2.2468292
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/12771761",
+                "name": "de Versailles à Verneuil",
+                "distance": 1940.988048006488,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7673979,
+                    1.193604
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/12771762",
+                "name": "de Paris à Versailles",
+                "distance": 352.78623928715353,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7709219,
+                    2.1471033
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/12845151",
+                "name": "Non spécifié",
+                "distance": 3795.2871747856375,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8535923,
+                    2.3471139
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/12852047",
+                "name": "Non spécifié",
+                "distance": 954.0628389254226,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7844272,
+                    2.4368929
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/12892406",
+                "name": "Grand Tour de Paris (04), Montagny-Prouvaire - La Ferté-Milon",
+                "distance": 1480.5675959784185,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.2373816,
+                    2.8819637
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/13232752",
+                "name": "Boucle de l'Yerres",
+                "distance": 184.34162380684126,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7299535,
+                    2.4990783
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/13363916",
+                "name": "Les Portes de Paris",
+                "distance": 601.442497613725,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.878371,
+                    2.2795716
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/13364179",
+                "name": "Traversée de Paris n°1",
+                "distance": 212.89011881984985,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8566462,
+                    2.2866355
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/13364818",
+                "name": "Un parcours, trois histoires",
+                "distance": 146.29994109423112,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.853482,
+                    2.410794
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/13371323",
+                "name": "Non spécifié",
+                "distance": 138.29167396904512,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8028683,
+                    2.3548622
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/13550113",
+                "name": "Entre Plateau et Vallée à Gif",
+                "distance": 123.35827563267267,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.701115,
+                    2.0994588
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/13593592",
+                "name": "Circuit d'Écouen",
+                "distance": 224.981567299514,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.0268346,
+                    2.3673309
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/13707182",
+                "name": "Rigoles du plateau",
+                "distance": 110.94072657992737,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7304458,
+                    2.2169152
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14175432",
+                "name": "Sentier des Parcs",
+                "distance": 352.81431805914985,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9033778,
+                    2.2680237
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14214910",
+                "name": "L'Abbaye aux bois",
+                "distance": 129.34154016373617,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7554284,
+                    2.2221605
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14364449",
+                "name": "Le Grand Chemin",
+                "distance": 256.2035590812966,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.887631,
+                    2.4225038
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14549954",
+                "name": "Non spécifié",
+                "distance": 196.05912648224975,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9215827,
+                    2.1054059
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14941170",
+                "name": "Traversée de Paris n°4",
+                "distance": 212.4564073622494,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8468363,
+                    2.2698508
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14953968",
+                "name": "Les quarante arpents",
+                "distance": 114.37916987863336,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.08769,
+                    2.191085
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14958333",
+                "name": "Le chemin des Croix",
+                "distance": 107.40069798002227,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.1387402,
+                    2.1170027
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14965224",
+                "name": "Le parc départemental Georges-Valbon",
+                "distance": 144.14908804798543,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9301313,
+                    2.3854233
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14965719",
+                "name": "Aux marches de Luzarches",
+                "distance": 244.14997995091753,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.1390247,
+                    2.4846904
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14972054",
+                "name": "Une Île au milieu du fleuve",
+                "distance": 135.23583735631223,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9358148,
+                    2.3407581
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14978355",
+                "name": "Forêt de Verrières",
+                "distance": 123.9614486012411,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7613898,
+                    2.2329861
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14980699",
+                "name": "Sentier des Lisières",
+                "distance": 379.37925733557336,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.0132007,
+                    2.334889
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/14994530",
+                "name": "La Grande Echappée",
+                "distance": 120.80760026044366,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.2061364,
+                    2.7175973
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/15590591",
+                "name": "L'Abbaye de Chaalis",
+                "distance": 155.3643383418401,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.125598,
+                    2.6929047
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/15764254",
+                "name": "Circuit de Bouffémont",
+                "distance": 141.71672764121118,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.0467299,
+                    2.2983036
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/15870602",
+                "name": "Parcours randonnée",
+                "distance": 125.59879438210126,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8265363,
+                    2.1015044
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/15881828",
+                "name": "Non spécifié",
+                "distance": 262.2029582936666,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7010387,
+                    2.0713645
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/15883258",
+                "name": "Non spécifié",
+                "distance": 151.82708383820358,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.751803,
+                    2.2818848
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/15883459",
+                "name": "Non spécifié",
+                "distance": 287.68184049167905,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.5875456,
+                    2.2515992
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/15986191",
+                "name": "Non spécifié",
+                "distance": 666.668468374736,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9505539,
+                    2.8799005
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/15998085",
+                "name": "Non spécifié",
+                "distance": 872.3425274234212,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9505539,
+                    2.8799005
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/16226933",
+                "name": "Non spécifié",
+                "distance": 478.3871324623629,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8838128,
+                    1.9891697
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/16226934",
+                "name": "Non spécifié",
+                "distance": 1524.3173364412678,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9811094,
+                    2.0008063
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/16278523",
+                "name": "Sancti Martini HW-60-11 Varredes - Claye-Souilly",
+                "distance": 342.1693443906662,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9452861,
+                    2.6912145
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/16358503",
+                "name": "Sancti Martini HW-60-12 Claye-Souilly - Igny",
+                "distance": 770.7325352847694,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8579676,
+                    2.3496457
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/16536335",
+                "name": "La corniche des forts",
+                "distance": 165.20420582488904,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8915221,
+                    2.4230319
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/16537740",
+                "name": "Sentier neuf",
+                "distance": 167.74402782453495,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9087484,
+                    2.3001391
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/16553916",
+                "name": "Une balade en couleurs",
+                "distance": 102.70473341217557,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9110122,
+                    2.3346488
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/16805947",
+                "name": "Non spécifié",
+                "distance": 133.2303415410087,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9733175,
+                    2.3067519
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17049567",
+                "name": "La Brie Verte - Boucle 1 - De Notre Dame à Ferrières",
+                "distance": 857.640107156336,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8087127,
+                    2.6178409
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17380691",
+                "name": "Non spécifié",
+                "distance": 146.58513570967557,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6806336,
+                    2.5382567
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17380692",
+                "name": "Non spécifié",
+                "distance": 152.86643916062485,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6807825,
+                    2.5329287
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17380693",
+                "name": "Non spécifié",
+                "distance": 130.91522459290394,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6726765,
+                    2.4102168
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17380694",
+                "name": "Non spécifié",
+                "distance": 171.40846488554186,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.676691,
+                    2.2894613
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17380695",
+                "name": "Non spécifié",
+                "distance": 241.44168401917503,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7061013,
+                    2.2403398
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17380696",
+                "name": "Non spécifié",
+                "distance": 226.71575965833716,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.770577,
+                    2.1464535
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17380698",
+                "name": "Non spécifié",
+                "distance": 120.02360415509773,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9192402,
+                    2.0490129
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17380699",
+                "name": "Non spécifié",
+                "distance": 187.9227703025697,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.0232103,
+                    2.0909196
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17380701",
+                "name": "Non spécifié",
+                "distance": 121.41481481635591,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9833182,
+                    2.101513
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17381579",
+                "name": "Non spécifié",
+                "distance": 166.99668955933285,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.0368429,
+                    2.2493851
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17381581",
+                "name": "Non spécifié",
+                "distance": 139.71218421145642,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9699991,
+                    2.3518318
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17381582",
+                "name": "Non spécifié",
+                "distance": 205.07930955184816,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9454703,
+                    2.4140414
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17381583",
+                "name": "Non spécifié",
+                "distance": 222.17193810210242,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9244411,
+                    2.5699611
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17381584",
+                "name": "Non spécifié",
+                "distance": 127.58153840086075,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8175345,
+                    2.5951091
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17381585",
+                "name": "Non spécifié",
+                "distance": 103.06405196890834,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8175345,
+                    2.5951091
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17381586",
+                "name": "Non spécifié",
+                "distance": 132.78061392689688,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8372255,
+                    2.1459257
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17382133",
+                "name": "Non spécifié",
+                "distance": 118.55427814862614,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.693612,
+                    2.5481743
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17382134",
+                "name": "Non spécifié",
+                "distance": 154.6539877211622,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.764408,
+                    2.4099758
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17382135",
+                "name": "Non spécifié",
+                "distance": 163.89516239059367,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.764408,
+                    2.4099758
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17382136",
+                "name": "Non spécifié",
+                "distance": 153.19145250337792,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.7708765,
+                    2.3102311
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17734434",
+                "name": "Le circuit de Rosny sous Bois",
+                "distance": 132.5141471712849,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8709121,
+                    2.4847712
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17736701",
+                "name": "Sentier de Cosette",
+                "distance": 133.17481510833443,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9014788,
+                    2.570028
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/17996496",
+                "name": "Panoramas de la Seine à la Montagne",
+                "distance": 211.85285914156816,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.977236,
+                    2.2070015
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/18256724",
+                "name": "Boucle de Savigny",
+                "distance": 231.57957164345984,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6003595,
+                    2.5642317
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/18259198",
+                "name": "De l’Yerres à Sénart",
+                "distance": 108.94864794970698,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.6860685,
+                    2.521927
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/18262989",
+                "name": "Aqueduc de la Dhuys",
+                "distance": 237.9152014804214,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8821979,
+                    2.6293137
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/18264652",
+                "name": "Vallée de la Brosse",
+                "distance": 125.56059860785072,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.8389512,
+                    2.7067717
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/18267425",
+                "name": "L’eau des moines",
+                "distance": 200.01885361829437,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.1221158,
+                    2.3944916
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/18267496",
+                "name": "La forêt de L'Isle-Adam",
+                "distance": 220.19446493110797,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.0875661,
+                    2.2358637
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/18267527",
+                "name": "Circuit de Belloy – Saint-Martin",
+                "distance": 190.80875538530367,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.1098577,
+                    2.3435628
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "osm_id": "relation/18271562",
+                "name": "En forêt de Saint-Germain",
+                "distance": 123.47899361883806,
+                "route": "hiking"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    48.9608089,
+                    2.1273606
+                ]
+            }
+        }
+    ]
+}
