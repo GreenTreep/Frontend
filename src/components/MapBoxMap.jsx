@@ -14,6 +14,7 @@ export default function Page() {
   const [endCoords, setEndCoords] = useState(null);
   const [transportMode, setTransportMode] = useState("driving");
   const [routeInstructions, setRouteInstructions] = useState([]);
+  const [routeDuration, setRouteDuration] = useState(null);
 
   // Utilisation du thème depuis le hook useTheme
   const { theme } = useTheme();
@@ -32,6 +33,7 @@ export default function Page() {
 
       const route = data.routes[0]?.geometry;
       const steps = data.routes[0]?.legs[0]?.steps || [];
+      const duration = data.routes[0]?.duration || null; // Durée en secondes
 
       if (route && mapRef.current) {
         if (mapRef.current.getLayer("route")) mapRef.current.removeLayer("route");
@@ -43,11 +45,17 @@ export default function Page() {
           type: "line",
           source: "route",
           layout: { "line-join": "round", "line-cap": "round" },
-          paint: { "line-color": "#007bff", "line-width": 5 },
+          paint: { "line-color": "#008000", "line-width": 5 },
         });
 
         mapRef.current.fitBounds([startCoords, endCoords], { padding: 50 });
-
+        const formatDuration = (duration) => {
+          const hours = Math.floor(duration / 3600);
+          const minutes = Math.floor((duration % 3600) / 60);
+          return `${hours > 0 ? `${hours} h ` : ""}${minutes} min`;
+        };
+        const formattedDuration = formatDuration(duration);
+        console.log(`Durée formatée du trajet : ${formattedDuration}`);
         setRouteInstructions(
           steps.map((step) => ({
             instruction: step.maneuver.instruction,
@@ -55,11 +63,14 @@ export default function Page() {
             modifier: step.maneuver.modifier,
           }))
         );
+
+        setRouteDuration(formattedDuration);
       }
     } catch (error) {
       console.error("Erreur lors de la récupération de l’itinéraire :", error);
     }
   };
+
 
   useEffect(() => {
     fetchRoute();
@@ -73,6 +84,7 @@ export default function Page() {
         setTransportMode={setTransportMode}
         transportMode={transportMode}
         routeInstructions={routeInstructions}
+        routeDuration={routeDuration}
       />
 
       <SidebarInset>
