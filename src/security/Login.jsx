@@ -22,7 +22,7 @@ function Login() {
       console.log('[Login] Authentication successful. Token:', response.data.token);
       localStorage.setItem('accessToken', response.data.token);
   
-      const userResponse = await api.get('/user/me'); // Récupère les infos utilisateur
+      const userResponse = await api.get('/user'); // Récupère les infos utilisateur
       console.log('[Login] User data fetched after login:', userResponse.data);
   
       setUser(userResponse.data); // Mettez à jour l'état utilisateur
