@@ -20,7 +20,7 @@ import {
 import { NavItinerary } from "@/components/sidebar/NavItinerary"
 import { NavSettings } from "@/components/sidebar/NavSettings";
 
-export function NavMain({ items, setStartCoords, setEndCoords, setTransportMode, routeInstructions, transportMode }) {
+export function NavMain({ items, setStartCoords, routeDuration, setEndCoords, setTransportMode, routeInstructions, transportMode }) {
   const { state } = useSidebar(); // "expanded" ou "collapsed"
 
   return (
@@ -50,6 +50,7 @@ export function NavMain({ items, setStartCoords, setEndCoords, setTransportMode,
                     setTransportMode={setTransportMode}
                     routeInstructions={routeInstructions}
                     transportMode={transportMode}
+                    routeDuration={routeDuration}
                   />
                 )}
                 {item.showSettings && (
