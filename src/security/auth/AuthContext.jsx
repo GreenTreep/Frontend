@@ -21,9 +21,12 @@ export const AuthProvider = ({ children }) => {
         }
 
         try {
-            const response = await api.get('/user/me');
+            // const response = await api.get('/user/first-name');
+            // console.log('[AuthContext] Fetched user data:', response.data);
+            // setUser({ firstName: response.data });
+            const response = await api.get('/user'); // Supposons que l'API retourne un objet utilisateur complet
             console.log('[AuthContext] Fetched user data:', response.data);
-            setUser({ firstName: response.data });
+            setUser(response.data); 
         } catch (error) {
             console.error('[AuthContext] Error fetching user data:', error);
             localStorage.removeItem('accessToken');
@@ -47,6 +50,11 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const getFirstName = () => user?.firstName;
+    const isAdmin = () => user?.role === "ADMIN";
+    const getId = () => user?.id;
+
+
     // Initialise l'état d'authentification au chargement
     useEffect(() => {
         const initializeAuth = async () => {
@@ -59,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
     // Fournit le contexte Auth aux composants enfants
     return (
-        <AuthContext.Provider value={{ user, setUser, loading, logout }}>
+        <AuthContext.Provider value={{ user, setUser, loading, logout, isAdmin, getFirstName, getId }}>
             {!loading && children} {/* Empêche le rendu tant que loading est true */}
         </AuthContext.Provider>
     );
