@@ -25,7 +25,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 
-mapboxgl.accessToken = "votre_token_mapbox";
+mapboxgl.accessToken = "pk.eyJ1Ijoic3lsdmFpbmNvc3RlcyIsImEiOiJjbTNxZXNtN3cwa2hpMmpxdWd2cndhdnYwIn0.V2ZAp-BqZq6KIHQ6Lu8eAQ";
 
 const InputWithSuggestions = ({ placeholder, value, onChange, suggestions, onSelect }) => (
   <div className="relative">
