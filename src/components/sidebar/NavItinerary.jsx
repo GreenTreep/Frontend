@@ -25,7 +25,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 
-mapboxgl.accessToken = "votre_token_mapbox";
+mapboxgl.accessToken = "pk.eyJ1Ijoic3lsdmFpbmNvc3RlcyIsImEiOiJjbTNxZXNtN3cwa2hpMmpxdWd2cndhdnYwIn0.V2ZAp-BqZq6KIHQ6Lu8eAQ";
 
 const InputWithSuggestions = ({ placeholder, value, onChange, suggestions, onSelect }) => (
   <div className="relative">
@@ -64,7 +64,7 @@ const getManeuverIcon = (type, modifier) => {
   return 'mdi:circle-outline';
 };
 
-export function NavItinerary({ setStartCoords, setEndCoords, setTransportMode, routeInstructions, transportMode }) {
+export function NavItinerary({ setStartCoords, setEndCoords, routeDuration, setTransportMode, routeInstructions, transportMode }) {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [startSuggestions, setStartSuggestions] = useState([]);
@@ -155,15 +155,20 @@ export function NavItinerary({ setStartCoords, setEndCoords, setTransportMode, r
                 <Button
                   key={m.mode}
                   onClick={() => setTransportMode(m.mode)}
-                  className={`flex items-center justify-center rounded-full ${
-                    transportMode === m.mode ? " text-white" : "bg-gray-200 text-gray-700"
-                  }`}
+                  className={`flex items-center justify-center rounded-full ${transportMode === m.mode ? "text-white" : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200"
+                    }`}
                 >
                   <Icon icon={m.icon} className="iconify text-xl" />
                 </Button>
               ))}
             </div>
-
+            {/* Durée du trajet */}
+            {routeDuration && routeDuration != null && (
+              <div className="mt-4 text-sm">
+                <h4 className="font-semibold mb-2 text-base">Durée du trajet :</h4>
+                <p>{routeDuration}</p>
+              </div>
+            )}
             {/* Instructions */}
             {routeInstructions && routeInstructions.length > 0 && (
               <div className="mt-4 text-sm leading-tight">
@@ -179,7 +184,7 @@ export function NavItinerary({ setStartCoords, setEndCoords, setTransportMode, r
                     ))}
                   </ul>
                   {/* Overlay avec dégradé et blur + bouton "Voir tout l'itinéraire" */}
-                  <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white to-transparent backdrop-blur-sm flex items-end justify-center p-2 z-10">
+                  <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white to-transparent dark:from-gray-900 dark:to-transparent backdrop-blur-sm flex items-end justify-center p-2 z-10">
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button variant="link" className="underline text-sm p-0 h-auto">
@@ -203,11 +208,13 @@ export function NavItinerary({ setStartCoords, setEndCoords, setTransportMode, r
                             ))}
                           </ul>
                         </div>
-                        <DialogFooter>
+                        <DialogFooter className="flex justify-between items-center">
+                          <p className="text-sm text-start flex-1">Durée du trajet : {routeDuration}</p>
                           <DialogClose asChild>
                             <Button variant="secondary">Fermer</Button>
                           </DialogClose>
                         </DialogFooter>
+
                       </DialogContent>
                     </Dialog>
                   </div>
