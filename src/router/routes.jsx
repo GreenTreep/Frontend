@@ -6,6 +6,7 @@ import MapPage from '../pages/Map.jsx';
 import Test from '../pages/Test.jsx';
 import Login from '../security/Login.jsx';
 import Register from '../security/Register.jsx';
+import HelpAdmin from '../help/HelpAdmin.jsx'
 
 const routes = [
   {
@@ -22,7 +23,7 @@ const routes = [
       },
       {
         path: '/mapbox',
-        element: <MapPage />, // Assurez-vous que le composant MapPage existe et est correctement importé
+        element: <MapPage />,
       },
       {
         path: '/login',
@@ -36,6 +37,10 @@ const routes = [
         path: '*',
         element: <Error404 />,
       },
+      {
+        path: '/help-admin',
+        element: <HelpAdmin />,
+      }
     ],
   },
 ];
