@@ -1,10 +1,10 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { HeroHighlight, Highlight } from "@/components/ui/hero-highlight"; 
+import { HeroHighlight, Highlight } from "@/components/ui/hero-highlight";
 
 import { World } from "@/components/ui/globe.jsx";
-import  Iphone15Pro  from "@/components/ui/iphone-15-pro.jsx";
+import Iphone15Pro from "@/components/ui/iphone-15-pro.jsx";
 
 export function GlobeDemo() {
     const globeConfig = {
@@ -418,28 +418,29 @@ export function GlobeDemo() {
                             }}
                             className="w-full text-center md:text-left"
                         >
-                        <div className="dark:bg-slate-800">
-                            <h2 className="text-2xl md:text-4xl font-bold text-black dark:text-white mb-4">
-                                Explorez les Sentiers avec <Highlight className="text-green-500 dark:text-green-400">GreenTrip</Highlight>
-                            </h2>
-                            <p className="text-lg md:text-xl font-normal text-neutral-700 dark:text-neutral-200">
-                                Découvrez des itinéraires de randonnée personnalisés, connectez-vous avec une communauté passionnée et partagez vos aventures. GreenTrip est votre compagnon idéal pour chaque excursion en plein air.
-                            </p>
+                            <div className="dark:bg-slate-800">
+                                <h2 className="text-2xl md:text-4xl font-bold text-black dark:text-white mb-2">
+                                    Explorez les Sentiers avec </h2>
+                                <h2 className="mb-2"> <Highlight className="text-green-500 text-2xl md:text-4xl mb-2 dark:text-green-400">GreenTrip</Highlight> </h2>
+
+                                <p className="text-lg md:text-xl font-normal text-neutral-700 dark:text-neutral-200">
+                                    Découvrez des itinéraires de randonnée personnalisés, connectez-vous avec une communauté passionnée et partagez vos aventures. GreenTrip est votre compagnon idéal pour chaque excursion en plein air.
+                                </p>
                             </div>
                         </motion.div>
                     </HeroHighlight>
                 </div>
- 
-    {/* Section Droite : iPhone */}
-                <div className="relative md:pl-6 border-l border-green-400 dark:border-gray-600">
+
+                {/* Section Droite : iPhone */}
+                <div className="relative flex items-center justify-center border-t border-green-400 text-center dark:border-bgcolor md:border-t-0 md:border-l md:pl-6">
                     <Iphone15Pro
-                        className="size-1/2 ml-32"
+                        className="size-1/2"
                         videoSrc="https://videos.pexels.com/video-files/8946986/8946986-uhd_1440_2732_25fps.mp4"
                     />
                 </div>
 
                 {/* Gradient Overlay (Optionnel) */}
-                <div className="absolute w-full bottom-0 inset-x-0 h-40 bg-gradient-to-b pointer-events-none select-none from-transparent dark:to-black to-white z-40" />
+                <div className="absolute w-full -bottom-20 inset-x-0 h-20 bg-gradient-to-b pointer-events-none select-none from-transparent dark:to-black to-white z-40" />
             </div>
         </div>
     );
