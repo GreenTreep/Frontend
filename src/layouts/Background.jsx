@@ -1,13 +1,38 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import backgroundImage from '../assets/h.png'; 
 
-function Background() {
+const Background = () => {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+
+  const opacity = Math.min(scrollY / 600, 1);
+
   return (
-    <><div className="absolute top-0 z-[-2] h-screen w-screen bg-white bg-[radial-gradient(100%_50%_at_50%_0%,rgba(0,163,255,0.13)_0,rgba(0,163,255,0)_50%,rgba(0,163,255,0)_100%)] dark:hidden"></div>
-        
-        <div className="absolute bottom-0 left-[-20%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(34,197,94,0.15),rgba(255,255,255,0))] dark:block hidden"></div>
-        <div className="absolute bottom-0 right-[-20%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_farthest-side,rgba(34,197,94,0.15),rgba(255,255,255,0))] dark:block hidden"></div>
-        </>
-  )
-}
+    <div
+      className="fixed inset-0 bg-cover dark:opacity-40 bg-center z-[-2]"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        transition: 'background-color 0.2s ease', 
+      }}
+    >
+      <div
+        className="absolute inset-0 dark:bg-black dark:opacity-40 bg-white"
+        style={{ opacity }}
+      ></div>
+    </div>
+  );
+};
 
-export default Background
+export default Background;
