@@ -28,6 +28,7 @@ const InputWithSuggestions = ({ placeholder, value, onChange, suggestions, onSel
 const MapboxMap = () => {
     const mapContainerRef = useRef(null);
     const mapRef = useRef(null);
+    const markersRef = useRef([]); // Stocker les marqueurs pour pouvoir les supprimer
     const [startInput, setStartInput] = useState('');
     const [endInput, setEndInput] = useState('');
     const [startSuggestions, setStartSuggestions] = useState([]);
@@ -35,14 +36,17 @@ const MapboxMap = () => {
     const [startCoords, setStartCoords] = useState(null);
     const [endCoords, setEndCoords] = useState(null);
     const [transportMode, setTransportMode] = useState('driving');
-    const [routeInstructions, setRouteInstructions] = useState([]);
-    const suggestionCache = useRef({});
+    const [pois, setPois] = useState({
+        hotel: [],
+        restaurant: [],
+        gas_station: [],
+    });
 
     useEffect(() => {
         mapRef.current = new mapboxgl.Map({
             container: mapContainerRef.current,
             style: 'mapbox://styles/mapbox/streets-v11',
-            center: [2.3522, 48.8566], // Paris par défaut
+            center: [2.3522, 48.8566],
             zoom: 5,
         });
 
@@ -57,18 +61,11 @@ const MapboxMap = () => {
             return;
         }
 
-        if (suggestionCache.current[query]) {
-            setSuggestions(suggestionCache.current[query]);
-            return;
-        }
-
         const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?types=place&autocomplete=true&access_token=${mapboxgl.accessToken}`;
         try {
             const response = await fetch(url);
-            if (!response.ok) throw new Error('Erreur API Mapbox Geocoding');
             const data = await response.json();
             const suggestions = data.features.map((f) => ({ name: f.place_name, coords: f.center }));
-            suggestionCache.current[query] = suggestions;
             setSuggestions(suggestions);
         } catch (error) {
             console.error('Erreur lors de la récupération des suggestions :', error);
@@ -84,11 +81,11 @@ const MapboxMap = () => {
             const response = await fetch(url);
             const data = await response.json();
 
-            const route = data.routes[0]?.geometry;
-            const steps = data.routes[0]?.legs[0]?.steps || [];
+            if (data.routes && data.routes.length > 0) {
+                const route = data.routes[0]?.geometry;
 
-            if (route) {
                 const map = mapRef.current;
+
                 if (map.getLayer('route')) map.removeLayer('route');
                 if (map.getSource('route')) map.removeSource('route');
 
@@ -102,42 +99,133 @@ const MapboxMap = () => {
                 });
                 map.fitBounds([startCoords, endCoords], { padding: 50 });
 
-                setRouteInstructions(
-                    steps.map((step) => ({
-                        instruction: step.maneuver.instruction,
-                        type: step.maneuver.type,
-                        modifier: step.maneuver.modifier,
-                    }))
-                );
+                fetchPois(route);
             }
         } catch (error) {
             console.error('Erreur lors de la récupération de l’itinéraire :', error);
         }
     };
 
+    const fetchPois = async (geometry) => {
+        if (!geometry) return;
+
+        const bbox = calculateBoundingBox(geometry.coordinates);
+        const categories = ['hotel', 'restaurant', 'gas_station', 'campground', 'trailhead', 'park'];
+        const poisByCategory = {
+            hotel: [],
+            restaurant: [],
+            gas_station: [],
+            campground: [],
+            trailhead: [],
+            park: [],
+        };
+
+        // Nettoyer les anciens marqueurs
+        clearMarkers();
+
+        for (const category of categories) {
+            const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${category}.json?bbox=${bbox.join(',')}&access_token=${mapboxgl.accessToken}`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.features) {
+                    const filteredPois = filterPoisByProximity(
+                        data.features.map((feature) => ({
+                            name: feature.text,
+                            coords: feature.geometry.coordinates,
+                            category,
+                        })),
+                        geometry.coordinates,
+                        10 // Augmente le rayon à 10 km pour inclure plus de POI
+                    );
+                    poisByCategory[category] = filteredPois;
+                }
+            } catch (error) {
+                console.error(`Erreur lors de la récupération des POI pour ${category}:`, error);
+            }
+        }
+
+        setPois(poisByCategory);
+        addMarkers(poisByCategory);
+    };
+
+    const clearMarkers = () => {
+        markersRef.current.forEach((marker) => marker.remove());
+        markersRef.current = []; // Réinitialise les marqueurs stockés
+    };
+
+    const filterPoisByProximity = (pois, routeCoordinates, maxDistance) => {
+        return pois.filter((poi) => {
+            return routeCoordinates.some((coordinate) => {
+                const distance = calculateDistance(coordinate, poi.coords);
+                return distance <= maxDistance;
+            });
+        });
+    };
+    
+
+    const calculateDistance = ([lng1, lat1], [lng2, lat2]) => {
+        const toRad = (deg) => (deg * Math.PI) / 180;
+        const R = 6371; // Rayon de la Terre en km
+        const dLat = toRad(lat2 - lat1);
+        const dLng = toRad(lng2 - lng1);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
+
+    const calculateBoundingBox = (coordinates) => {
+        let minLng = Infinity,
+            minLat = Infinity,
+            maxLng = -Infinity,
+            maxLat = -Infinity;
+
+        coordinates.forEach(([lng, lat]) => {
+            if (lng < minLng) minLng = lng;
+            if (lat < minLat) minLat = lat;
+            if (lng > maxLng) maxLng = lng;
+            if (lat > maxLat) maxLat = lat;
+        });
+
+        return [minLng, minLat, maxLng, maxLat];
+    };
+
+    const addMarkers = (poisByCategory) => {
+        const map = mapRef.current;
+
+        Object.keys(poisByCategory).forEach((category) => {
+            poisByCategory[category].forEach((poi) => {
+                if (!poi.coords || !poi.name) return;
+
+                const marker = new mapboxgl.Marker({
+                    color: category === 'hotel' ? 'blue' : category === 'restaurant' ? 'red' : 'green',
+                })
+                    .setLngLat(poi.coords)
+                    .setPopup(
+                        new mapboxgl.Popup().setHTML(`
+                            <strong>${poi.name}</strong><br>
+                            <em>${category}</em>
+                        `)
+                    )
+                    .addTo(map);
+
+                markersRef.current.push(marker); // Stocker le marqueur pour le nettoyage
+            });
+        });
+    };
+
     useEffect(() => {
         fetchRoute();
     }, [startCoords, endCoords, transportMode]);
-
-    const getManeuverIcon = (type, modifier) => {
-        if (type === 'depart') return 'mdi:map-marker';
-        if (type === 'arrive') return 'mdi:flag-checkered';
-        if (type === 'turn') {
-            if (modifier === 'left') return 'mdi:arrow-left';
-            if (modifier === 'right') return 'mdi:arrow-right';
-            if (modifier === 'straight') return 'mdi:arrow-up';
-            if (modifier === 'uturn') return 'mdi:arrow-u-left-top';
-        }
-        if (type === 'roundabout') return 'mdi:arrow-u-right-top';
-        return 'mdi:circle-outline';
-    };
 
     return (
         <div className="map-container">
             <div className="map-controls">
                 <h3>Choisir un itinéraire</h3>
 
-                {/* Entrée pour la ville de départ */}
                 <InputWithSuggestions
                     placeholder="Ville de départ"
                     value={startInput}
@@ -153,7 +241,6 @@ const MapboxMap = () => {
                     }}
                 />
 
-                {/* Entrée pour la ville d'arrivée */}
                 <InputWithSuggestions
                     placeholder="Ville d'arrivée"
                     value={endInput}
@@ -169,7 +256,6 @@ const MapboxMap = () => {
                     }}
                 />
 
-                {/* Modes de transport */}
                 <div className="map-transport">
                     <button
                         className={transportMode === 'driving' ? 'active' : ''}
@@ -191,20 +277,31 @@ const MapboxMap = () => {
                     </button>
                 </div>
 
-                {/* Instructions */}
-                {routeInstructions.length > 0 && (
-                    <div className="map-instructions">
-                        <h4>Instructions du trajet :</h4>
+                {/* Liste des lieux trouvés par catégories */}
+                {Object.keys(pois).map((category) => (
+                    <div className="pois-category" key={category}>
+                        <h4>
+                            <Icon
+                                icon={
+                                    category === 'hotel'
+                                        ? 'mdi:bed'
+                                        : category === 'restaurant'
+                                            ? 'mdi:silverware-fork-knife'
+                                            : 'mdi:gas-station'
+                                }
+                                className="category-icon"
+                            />{' '}
+                            {category.charAt(0).toUpperCase() + category.slice(1)}
+                        </h4>
                         <ul>
-                            {routeInstructions.map((step, index) => (
+                            {pois[category].map((poi, index) => (
                                 <li key={index}>
-                                    <Icon icon={getManeuverIcon(step.type, step.modifier)} className="instruction-icon" />
-                                    <span>{step.instruction}</span>
+                                    <strong>{poi.name}</strong>
                                 </li>
                             ))}
                         </ul>
                     </div>
-                )}
+                ))}
             </div>
             <div ref={mapContainerRef} className="map-display"></div>
         </div>
