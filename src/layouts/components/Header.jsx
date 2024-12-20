@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/security/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Icon } from '@iconify/react';
+import { CircleUserRound } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,7 +19,7 @@ import Helper from '@/help/Helper.jsx'
 
 
 const Header = () => {
-    const { user,logout } = useAuth();
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
     console.log('[Header] Current user state:', user);
 
@@ -27,12 +29,11 @@ const Header = () => {
     };
 
     return (
-        <header className="top-0 w-full bg-transparent p-4 shadow-md backdrop-blur">
+        <header className="top-0 w-screen bg-transparent p-4 shadow-md">
             <div className="flex justify-between items-center max-w-7xl mx-auto">
-                <Link to="/test">
+                <Link to="/mapbox">
                     <p className="text-3xl dark:text-green-400 text-green-700 font-extrabold tracking-tight">GreenTrip</p>
                 </Link>
-
                 <div>
                     {user && user.role === "ADMIN" ? ( // Si l'utilisateur est un admin
                         <Link to="/help-admin" className="px-2">
@@ -53,21 +54,19 @@ const Header = () => {
                                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={handleLogout}>Déconnexion</DropdownMenuItem>
-                            </DropdownMenuContent>
-                            </DropdownMenu>
+                            </DropdownMenuContent>                        
                         </>
-                        ) : (
-                            <Link to="/login" className="px-2">
-                                <Button className="px-7 py-2">Login</Button>
-                            </Link>
-                        )}
-                        <ModeToggle />
-                        
-                    </div>
+
+                    ) : (
+                        <Link to="/login" className="px-2">
+                            <Button className="px-7 py-2">Login</Button>
+                        </Link>
+                    )}
+                    <ModeToggle />
+                </div>
             </div>
         </header>
     );
 };
-
 
 export default Header;

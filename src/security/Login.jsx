@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/security/auth/AuthContext';
 import api from '@/security/auth/Api';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -26,12 +28,12 @@ function Login() {
       console.log('[Login] User data fetched after login:', userResponse.data);
   
       setUser(userResponse.data); // Mettez à jour l'état utilisateur
-      alert('Connexion réussie !');
+      toast.success('Connexion réussie !');
       navigate('/'); // Redirigez vers la page d'accueil
       window.location.reload();
     } catch (error) {
       console.error('[Login] Error during login:', error);
-      alert('Erreur lors de la connexion. Vérifiez vos identifiants.');
+      toast.error('Erreur lors de la connexion. Vérifiez vos identifiants.');
     }
   };
 
@@ -93,10 +95,9 @@ function Login() {
               </a>
             </div>
           </CardFooter>
-
-
         </Card>
       </div>
+      <ToastContainer />
     </>
   );
 }
