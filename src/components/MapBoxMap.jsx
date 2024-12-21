@@ -369,17 +369,9 @@ export default function Page() {
               isDarkMode={isDarkMode}
             />
           </div>
-<<<<<<< HEAD
         </SidebarInset>
       </SidebarProvider>
     );
 
   };
     
-=======
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
-  );
-}
->>>>>>> 8f0118167cbcdd6213ee5c27fdaeee2b9a67790d
