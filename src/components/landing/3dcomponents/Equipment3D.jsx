@@ -1,11 +1,13 @@
 import React, { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment } from "@react-three/drei";
+import { OrbitControls, Environment, useCursor } from "@react-three/drei";
 import { Backpack } from "./Backpack";
 import { Boots } from "./Boots";
 
 const RotatingModel = ({ children, rotationSpeed = 0.005 }) => {
   const ref = useRef();
+  const [hovered, setHovered] = React.useState(false);
+  useCursor(hovered, 'grab');
 
   // Rotation automatique
   useFrame(() => {
@@ -14,7 +16,15 @@ const RotatingModel = ({ children, rotationSpeed = 0.005 }) => {
     }
   });
 
-  return <group ref={ref}>{children}</group>;
+  return (
+    <group
+      ref={ref}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+    >
+      {children}
+    </group>
+  );
 };
 
 const Equipment3D = ({ model }) => {
