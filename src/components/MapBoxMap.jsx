@@ -249,26 +249,28 @@ export default function Page() {
     fetchRoute();
   }, [startCoords, endCoords, transportMode]);
   
-
-  return (
-    <SidebarProvider>
-      <AppSidebar
-        setStartCoords={setStartCoords}
-        setEndCoords={setEndCoords}
-        setTransportMode={setTransportMode}
-        transportMode={transportMode}
-        routeInstructions={routeInstructions}
-        pois={pois} // Ajout des POI dans la sidebar
-      />
-
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
+    return (
+      <SidebarProvider>
+        <AppSidebar
+          setStartCoords={setStartCoords}
+          setEndCoords={setEndCoords}
+          setTransportMode={setTransportMode}
+          transportMode={transportMode}
+          routeInstructions={routeInstructions}
+          pois={pois} // Ajout des POI dans la sidebar
+        />
+    
+        <SidebarInset>
+          {/* SidebarTrigger uniquement */}
+          <div className="absolute top-2 left-2 z-10">
+            <SidebarTrigger className="p-2 rounded-full  shadow-md" />
           </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 pt-0">
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+    
+          {/* MapDisplay pour prendre tout l'espace */}
+          <div
+            className="flex flex-1 relative min-h-screen"
+            style={{ height: "100vh" }} // S'assure que la carte prend toute la hauteur
+          >
             <MapDisplay
               mapRef={mapRef}
               mapContainerRef={mapContainerRef}
@@ -276,35 +278,10 @@ export default function Page() {
               endCoords={endCoords}
               isDarkMode={isDarkMode}
             />
-      <SidebarProvider>
-        <AppSidebar
-            setStartCoords={setStartCoords}
-            setEndCoords={setEndCoords}
-            setTransportMode={setTransportMode}
-            transportMode={transportMode}
-            routeInstructions={routeInstructions}
-            pois={pois}
-        />
-
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-            </div>
-          </header>
-          <div className="flex flex-1 flex-col gap-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
-              <MapDisplay
-                  mapRef={mapRef}
-                  mapContainerRef={mapContainerRef}
-                  startCoords={startCoords}
-                  endCoords={endCoords}
-                  isDarkMode={isDarkMode}
-              />
-            </div>
           </div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
-  );
-}
+        </SidebarInset>
+      </SidebarProvider>
+    );
+
+  };
+    
