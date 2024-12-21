@@ -127,7 +127,9 @@ const MapDisplay = ({
 
     return () => {
       clearTimeout(resizeTimeout);
-      resizeObserver.unobserve(mapContainerRef.current);
+      if (mapContainerRef.current instanceof Element) {
+        resizeObserver.unobserve(mapContainerRef.current);
+      }
     };
   }, [mapRef, mapContainerRef]);
 
