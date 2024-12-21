@@ -9,12 +9,23 @@ L'application GreenTrip est destinée à un large public souhaitant explorer la 
 GreenTrip permet aux utilisateurs de planifier leurs voyages en fonction de critères comme la durée, la difficulté, le terrain, et la météo. Elle fournit également des informations en temps réel sur la météo et propose des recommandations de points d'intérêt sur la route, des hébergements écologiques et des équipements adaptés à chaque type de voyage.
 
 
+## Fonctionnalités principales :
 
-## Badges
-[![Quality Gate](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/GreenTreep/Frontend/add_poi/.github/badges/sonar-badge.json&cacheSeconds=60)](https://github.com/GreenTreep/Frontend)
+- **Carte interactive** : Visualisez les itinéraires sur une carte dynamique (avec Mapbox).
+- **Login** : Sécurise l'accès à l'application via un système de connexion et d'inscription pour les utilisateurs.
+
+## Construit avec
+
+Cette section liste les principaux frameworks et bibliothèques utilisés pour démarrer le projet.
+
+- **Frontend** : React, Mapbox, TailwindCSS, React Router
+- **Backend** : Node.js, MySQL
+- **Base de données** : MySQL
+- **Cartes interactives** : Mapbox GL JS
+- **Conteneurisation** : Docker et Docker Compose
 
 ---
-## Installation
+## Manuel d'installation et d'utilisation
 
 1. Install dependencies:
     ```sh
@@ -30,6 +41,22 @@ GreenTrip permet aux utilisateurs de planifier leurs voyages en fonction de crit
     ```sh
     npm run dev
     ```
+## Conteneurisation avec Docker
+
+Ce projet peut être facilement exécuté dans un conteneur Docker. Pour ce faire, suivez les étapes ci-dessous :
+
+1. Assurez-vous que Docker est installé sur votre machine. Vous pouvez télécharger Docker [ici](https://www.docker.com/).
+
+2. Construisez l'image Docker pour le frontend et le backend en exécutant les commandes suivantes :
+
+Lancez les conteneurs avec ces commandes :
+```bash
+./gradlew build
+```
+
+```bash
+docker compose up --build
+```
 
 ## Project Structure
 
@@ -38,12 +65,23 @@ GreenTrip permet aux utilisateurs de planifier leurs voyages en fonction de crit
 
 ## Contributing
 
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature-branch`)
-3. Commit your changes (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature-branch`)
-5. Create a new Pull Request
+Les contributions sont ce qui fait la richesse de ce projet. Si vous avez une idée pour améliorer GreenTrip, n'hésitez pas à contribuer !
+
+1. Forkez le dépôt.
+2. Créez une branche pour votre fonctionnalité : (`git checkout -b feature-branch`)
+3. Faites vos modifications et validez-les : (`git commit -am 'Add new feature'`)
+4. Poussez vos changements : (`git push origin feature-branch`)
+5. Ouvrez une pull request pour discuter de vos modifications.
+
+Merci de contribuer à l'amélioration de GreenTrip !
 
 ## License
 
 This project is licensed under the Apache License.
+
+## Auteurs
+
+- **Sylvain Costes**
+- **Arezki Bazizi**
+- **Perle Nkounkou**
+- **Riad Kacem**
