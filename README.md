@@ -8,6 +8,14 @@ L'application GreenTrip est destinée à un large public souhaitant explorer la 
 
 GreenTrip permet aux utilisateurs de planifier leurs voyages en fonction de critères comme la durée, la difficulté, le terrain, et la météo. Elle fournit également des informations en temps réel sur la météo et propose des recommandations de points d'intérêt sur la route, des hébergements écologiques et des équipements adaptés à chaque type de voyage.
 
+## Présentation
+
+![GreenTrip](https://user-images.githubusercontent.com/123456789/greentrip-presentation.png)
+
+Ou regardez une courte démo vidéo :
+
+[![GreenTrip Video Demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+
 
 ## Fonctionnalités principales :
 
