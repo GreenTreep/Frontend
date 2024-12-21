@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { IconBrandYoutubeFilled } from "@tabler/icons-react";
 import { Link } from 'react-router-dom';
 import  Equipment3D  from "./3dcomponents/Equipment3D";
+import HeroVideoDialog from "@/components/ui/hero-video-dialog";
+
 
 
 export function FeaturesSectionDemo() {
@@ -204,26 +206,25 @@ export const SkeletonTwo = () => {
 /* SkeletonThree - Partagez Vos Aventures sur YouTube */
 export const SkeletonThree = () => {
   return (
-    <Link
-      to="https://www.youtube.com/watch?v=PyQQJWmV1LE"
-      target="__blank"
-      className="relative flex gap-10 h-full group/img">
-      <div
-        className="w-full mx-auto bg-transparent dark:bg-transparent group h-full">
-        <div className="flex flex-1 w-full h-full flex-col space-y-2 relative">
-          {/* Icône YouTube */}
-          <IconBrandYoutubeFilled className="h-20 w-20 absolute z-10 inset-0 text-red-500 m-auto" />
-          <img
-            src="https://i.natgeofe.com/n/7afda449-1780-4938-8342-2abe32326c86/Montblanchike.jpg" 
-            alt="Vidéo YouTube de Randonnée"
-            width={800}
-            height={800}
-            className="h-full w-full aspect-square object-cover object-center rounded-sm blur-none group-hover/img:blur-md transition-all duration-200" />
-        </div>
-      </div>
-    </Link>
+    <div className="relative">
+      <HeroVideoDialog
+        className="dark:hidden block"
+        animationStyle="from-center"
+        videoSrc="https://www.youtube.com/embed/PyQQJWmV1LE"
+        thumbnailSrc="https://i.natgeofe.com/n/7afda449-1780-4938-8342-2abe32326c86/Montblanchike.jpg"
+        thumbnailAlt="Vidéo YouTube de Randonnée"
+      />
+      <HeroVideoDialog
+        className="hidden dark:block"
+        animationStyle="from-center"
+        videoSrc="https://www.youtube.com/embed/PyQQJWmV1LE"
+        thumbnailSrc="https://i.natgeofe.com/n/7afda449-1780-4938-8342-2abe32326c86/Montblanchike.jpg"
+        thumbnailAlt="Vidéo YouTube de Randonnée"
+      />
+    </div>
   );
 };
+
 
 export const SkeletonFour = () => {
     const equipmentModels = ["backpack", "boots"]; // Identifiants des modèles
