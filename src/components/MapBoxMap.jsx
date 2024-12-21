@@ -28,6 +28,8 @@ export default function Page() {
   const [transportMode, setTransportMode] = useState("driving");
   const [routeInstructions, setRouteInstructions] = useState([]);
   const [pois, setPois] = useState({ hotel: [], restaurant: [], gas_station: [], park: [] });
+  const [parcoursData, setParcoursData] = useState(null); // État pour les données GeoJSON
+
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const markersRef = useRef([]); // Stocker les marqueurs pour nettoyage ultérieur
@@ -129,7 +131,38 @@ export default function Page() {
 
     setPois(poisByCategory); // Mettre à jour les POI dans le state
     addMarkers(poisByCategory); // Ajouter les nouveaux marqueurs
+    // addParcoursMarkers(); // Ajouter les marqueurs pour les parcours
   };
+
+  const addParcoursMarkers = (parcoursData) => {
+    if (!parcoursData || !parcoursData.features) return;
+  
+    parcoursData.features.forEach((parcours) => {
+      const { coordinates } = parcours.geometry;
+      const { name, distance } = parcours.properties; // Extraction de la distance depuis les propriétés
+      const [lat, lon] = coordinates;
+  
+      console.log("Ajouter un marqueur pour:", name, lat, lon, distance); // Vérifiez la valeur de la distance
+  
+      // Conversion de la distance de mètres à kilomètres
+      const distanceInKm = (distance / 1000).toFixed(3); // Diviser par 1000 et arrondir à 3 décimales
+  
+      const marker = new mapboxgl.Marker({ color: "grey" })
+        .setLngLat([lon, lat]) // Longitude, Latitude
+        .setPopup(new mapboxgl.Popup().setHTML(`
+          <strong>${name}</strong><br>
+          <em>Distance: ${distanceInKm} km</em>
+        `)) // Afficher la distance en km dans le popup
+        .addTo(mapRef.current);
+  
+      // Stocker le marqueur pour le nettoyer plus tard si nécessaire
+      markersRef.current.push(marker);
+    });
+  };
+  
+  
+  
+  
 
   const filterPoisByProximity = (pois, routeCoordinates, maxDistance) => {
     return pois.filter((poi) => {
@@ -204,10 +237,45 @@ export default function Page() {
   };
 
   useEffect(() => {
+    // Charger le fichier GeoJSON
+    fetch("/data_extraction/marqueurs3.geojson")
+      .then((response) => response.json())
+      .then((data) => {
+        setParcoursData(data);
+        addParcoursMarkers(data); // Appeler la fonction pour ajouter les marqueurs
+      })
+      .catch((error) => console.error("Erreur lors de la récupération des données GeoJSON:", error));
+  
     fetchRoute();
   }, [startCoords, endCoords, transportMode]);
+  
 
   return (
+    <SidebarProvider>
+      <AppSidebar
+        setStartCoords={setStartCoords}
+        setEndCoords={setEndCoords}
+        setTransportMode={setTransportMode}
+        transportMode={transportMode}
+        routeInstructions={routeInstructions}
+        pois={pois} // Ajout des POI dans la sidebar
+      />
+
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+          </div>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 pt-0">
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+            <MapDisplay
+              mapRef={mapRef}
+              mapContainerRef={mapContainerRef}
+              startCoords={startCoords}
+              endCoords={endCoords}
+              isDarkMode={isDarkMode}
+            />
       <SidebarProvider>
         <AppSidebar
             setStartCoords={setStartCoords}
@@ -235,7 +303,8 @@ export default function Page() {
               />
             </div>
           </div>
-        </SidebarInset>
-      </SidebarProvider>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
