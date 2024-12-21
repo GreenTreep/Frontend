@@ -1,4 +1,15 @@
 # Greentrip Frontend
+
+**GreenTrip**, l'application pour découvrir des voyages écologiques et des parcours en plein air respectueux de l'environnement.
+
+## Parlons voyages écologiques !
+
+L'application GreenTrip est destinée à un large public souhaitant explorer la nature de manière responsable. Elle s'adresse particulièrement aux randonneurs, cyclistes, et passionnés de voyages verts. Elle propose des itinéraires de randonnée, des road trips à vélo, ainsi que des suggestions d'hébergements et d'activités respectueuses de l'environnement.
+
+GreenTrip permet aux utilisateurs de planifier leurs voyages en fonction de critères comme la durée, la difficulté, le terrain, et la météo. Elle fournit également des informations en temps réel sur la météo et propose des recommandations de points d'intérêt sur la route, des hébergements écologiques et des équipements adaptés à chaque type de voyage.
+
+
+
 ## Badges
 [![Quality Gate](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/GreenTreep/Frontend/add_poi/.github/badges/sonar-badge.json&cacheSeconds=60)](https://github.com/GreenTreep/Frontend)
 
