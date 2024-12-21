@@ -1,15 +1,6 @@
-# GreenTrip Frontend
+# Greentrip Frontend
 
 **GreenTrip**, l'application pour découvrir des voyages écologiques et des parcours en plein air respectueux de l'environnement.
-
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)  [![Contributors](https://img.shields.io/github/contributors/GreenTreep/Frontend)](https://github.com/GreenTreep/Frontend/graphs/contributors)  [![GitHub last commit](https://img.shields.io/github/last-commit/GreenTreep/Frontend/develop)](https://github.com/GreenTreep/Frontend/commits/main)  [![GitHub issues](https://img.shields.io/github/issues/GreenTreep/Frontend)](https://github.com/GreenTreep/Frontend/issues)  
- 
-
-
-
-
-
----
 
 ## Parlons voyages écologiques !
 
@@ -17,68 +8,89 @@ L'application GreenTrip est destinée à un large public souhaitant explorer la 
 
 GreenTrip permet aux utilisateurs de planifier leurs voyages en fonction de critères comme la durée, la difficulté, le terrain, et la météo. Elle fournit également des informations en temps réel sur la météo et propose des recommandations de points d'intérêt sur la route, des hébergements écologiques et des équipements adaptés à chaque type de voyage.
 
-
-
----
-
 ## Présentation
 
 ![GreenTrip](https://user-images.githubusercontent.com/123456789/greentrip-presentation.png)
-
 
 Ou regardez une courte démo vidéo :
 
 [![GreenTrip Video Demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
 
+
+## Fonctionnalités principales :
+
+- **Carte interactive** : Visualisez les itinéraires sur une carte dynamique (avec Mapbox).
+- **Login** : Sécurise l'accès à l'application via un système de connexion et d'inscription pour les utilisateurs.
+
+## Construit avec
+
+Cette section liste les principaux frameworks et bibliothèques utilisés pour démarrer le projet.
+
+- **Frontend** : React, Mapbox, TailwindCSS, React Router
+- **Backend** : Node.js, MySQL
+- **Base de données** : MySQL
+- **Cartes interactives** : Mapbox GL JS
+- **Conteneurisation** : Docker et Docker Compose
+
 ---
+## Manuel d'installation et d'utilisation
 
-## Installation
-
-1. Installez les dépendances :
+1. Install dependencies:
     ```sh
     npm install
     ```
 
-2. Installez Git LFS :
+2. Install Git LFS:
     ```sh
     git lfs install
     ```
 
-3. Lancez le serveur de développement :
+3. Start the development server:
     ```sh
     npm run dev
     ```
+## Conteneurisation avec Docker
 
----
+Ce projet peut être facilement exécuté dans un conteneur Docker. Pour ce faire, suivez les étapes ci-dessous :
+
+1. Assurez-vous que Docker est installé sur votre machine. Vous pouvez télécharger Docker [ici](https://www.docker.com/).
+
+2. Construisez l'image Docker pour le frontend et le backend en exécutant les commandes suivantes :
+
+Lancez les conteneurs avec ces commandes :
+```bash
+./gradlew build
+```
+
+```bash
+docker compose up --build
+```
 
 ## Project Structure
 
 - `src/`: Source code of the application
 - `public/`: Public assets
 
----
-
 ## Contributing
 
-1. Forkez le dépôt.
-2. Créez une nouvelle branche :
-    ```sh
-    git checkout -b feature-branch
-    ```
-3. Commitez vos modifications :
-    ```sh
-    git commit -am 'Add new feature'
-    ```
-4. Poussez la branche :
-    ```sh
-    git push origin feature-branch
-    ```
-5. Créez une Pull Request.
+Les contributions sont ce qui fait la richesse de ce projet. Si vous avez une idée pour améliorer GreenTrip, n'hésitez pas à contribuer !
 
----
+1. Forkez le dépôt.
+2. Créez une branche pour votre fonctionnalité : (`git checkout -b feature-branch`)
+3. Faites vos modifications et validez-les : (`git commit -am 'Add new feature'`)
+4. Poussez vos changements : (`git push origin feature-branch`)
+5. Ouvrez une pull request pour discuter de vos modifications.
+
+Merci de contribuer à l'amélioration de GreenTrip !
 
 ## License
 
-Ce projet est sous licence [Apache License 2.0](LICENSE).
+This project is licensed under the Apache License.
 
----
+## Auteurs
+
+- **Sylvain Costes**
+- **Arezki Bazizi**
+- **Perle Nkounkou**
+- **Riad Kacem**
+
