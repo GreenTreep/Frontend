@@ -5,7 +5,7 @@ import { Icon } from '@iconify/react';
 import HeroSection from '../components/ui/HeroSection.jsx';
 import MapPage from '@/components/MapBoxMap.jsx';
 
-function Test() {
+function Map() {
     return (
         <>
             <HeroSection />
@@ -15,4 +15,4 @@ function Test() {
     )
 }
 
-export default Test
+export default Map
