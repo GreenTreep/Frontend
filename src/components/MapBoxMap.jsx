@@ -137,32 +137,122 @@ export default function Page() {
   const addParcoursMarkers = (parcoursData) => {
     if (!parcoursData || !parcoursData.features) return;
   
+    const map = mapRef.current;
+    const allParcours = [];
+  
+    // Préparation des données pour les clusters
     parcoursData.features.forEach((parcours) => {
       const { coordinates } = parcours.geometry;
-      const { name, distance } = parcours.properties; // Extraction de la distance depuis les propriétés
+      const { name, distance } = parcours.properties;
       const [lat, lon] = coordinates;
   
-      console.log("Ajouter un marqueur pour:", name, lat, lon, distance); // Vérifiez la valeur de la distance
+      allParcours.push({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [lon, lat],
+        },
+        properties: {
+          name,
+          distance, // Garder la distance pour l'affichage
+        },
+      });
+    });
   
-      // Conversion de la distance de mètres à kilomètres
-      const distanceInKm = (distance / 1000).toFixed(3); // Diviser par 1000 et arrondir à 3 décimales
+    // Ajouter une source GeoJSON pour les clusters des parcours
+    map.addSource('parcours', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: allParcours,
+      },
+      cluster: true,
+      clusterMaxZoom: 14,
+      clusterRadius: 50,
+    });
   
-      const marker = new mapboxgl.Marker({ color: "grey" })
-        .setLngLat([lon, lat]) // Longitude, Latitude
-        .setPopup(new mapboxgl.Popup().setHTML(`
+    // Ajouter des couches pour les clusters des parcours
+    map.addLayer({
+      id: 'parcours-clusters',
+      type: 'circle',
+      source: 'parcours',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#51bbd6',
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['get', 'point_count'],
+          0,
+          20,
+          100,
+          40,
+        ],
+      },
+    });
+  
+    // Ajouter une couche pour afficher le nombre de points dans chaque cluster
+    map.addLayer({
+      id: 'parcours-cluster-count',
+      type: 'symbol',
+      source: 'parcours',  
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}', // Afficher le nombre abrégé de points dans le cluster
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 12,
+      },
+      paint: {
+        'text-color': '#ffffff',
+      },
+    });
+  
+    // Ajouter une couche pour les parcours individuels (non clusterisés)
+    map.addLayer({
+      id: 'parcours-individual-points',
+      type: 'circle',
+      source: 'parcours',
+      filter: ['!has', 'point_count'],
+      paint: {
+        'circle-color': '#f28cb1',
+        'circle-radius': 15,
+      },
+    });
+  
+    // Événement de clic sur le cluster pour zoomer
+    map.on('click', 'parcours-cluster-count', (e) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['parcours-cluster-count'],
+      });
+      const clusterId = features[0].properties.cluster_id;
+      map.getSource('parcours').getClusterExpansionZoom(clusterId, (err, zoom) => {
+        if (err) return;
+  
+        map.easeTo({
+          center: features[0].geometry.coordinates,
+          zoom: zoom,
+        });
+      });
+    });
+  
+    // Événement de clic sur les points individuels pour afficher un popup avec des détails
+    map.on('click', 'parcours-individual-points', (e) => {
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const name = e.features[0].properties.name;
+      const distance = e.features[0].properties.distance;
+  
+      // Conversion de la distance en kilomètres pour l'afficher dans le popup
+      const distanceInKm = (distance / 1000).toFixed(3);
+  
+      new mapboxgl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(`
           <strong>${name}</strong><br>
           <em>Distance: ${distanceInKm} km</em>
-        `)) // Afficher la distance en km dans le popup
-        .addTo(mapRef.current);
-  
-      // Stocker le marqueur pour le nettoyer plus tard si nécessaire
-      markersRef.current.push(marker);
+        `)
+        .addTo(map);
     });
   };
-  
-  
-  
-  
 
   const filterPoisByProximity = (pois, routeCoordinates, maxDistance) => {
     return pois.filter((poi) => {
@@ -276,32 +366,6 @@ export default function Page() {
               endCoords={endCoords}
               isDarkMode={isDarkMode}
             />
-      <SidebarProvider>
-        <AppSidebar
-            setStartCoords={setStartCoords}
-            setEndCoords={setEndCoords}
-            setTransportMode={setTransportMode}
-            transportMode={transportMode}
-            routeInstructions={routeInstructions}
-            pois={pois}
-        />
-
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-            </div>
-          </header>
-          <div className="flex flex-1 flex-col gap-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
-              <MapDisplay
-                  mapRef={mapRef}
-                  mapContainerRef={mapContainerRef}
-                  startCoords={startCoords}
-                  endCoords={endCoords}
-                  isDarkMode={isDarkMode}
-              />
-            </div>
           </div>
         </div>
       </SidebarInset>
