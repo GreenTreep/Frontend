@@ -1,0 +1,138 @@
+// Helper.jsx
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/security/auth/AuthContext";
+import api from "@/security/auth/Api";
+
+const Helper = ({ isOpen, onClose }) => {
+  const { getId, user } = useAuth(); // Get user ID and info
+  const [messages, setMessages] = useState([]); // Messages list
+  const [newMessage, setNewMessage] = useState(""); // New message content
+  const [loading, setLoading] = useState(false); // Loading indicator
+  const messagesEndRef = useRef(null); // Ref for auto-scrolling
+
+  // Fetch messages on component mount or when user changes
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!user || user.role !== "USER") return; // Ensure user is a USER
+
+      const userId = getId();
+      setLoading(true);
+      try {
+        const response = await api.get(`/messages/user/${userId}/admins`); // Fetch messages
+        console.log("Messages fetched:", response.data);
+        setMessages(response.data);
+        scrollToBottom(); // Auto-scroll after loading
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, [getId, user]);
+
+  // Send a message to all admins
+  const sendMessage = async () => {
+    if (!newMessage.trim() || user.role !== "USER") return; // Only USER can send
+
+    const messagePayload = {
+      content: newMessage, // Message content
+      sender: {
+        id: getId(), // Sender ID
+      },
+    };
+
+    try {
+      const response = await api.post("/messages/from-user", messagePayload); // Send message
+      console.log("Response from server:", response.data);
+
+      // Update messages locally without reloading
+      const newMessages = Array.isArray(response.data) ? response.data : [response.data];
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        ...newMessages.map((msg) => ({
+          ...msg,
+          sender: msg.sender || { id: getId(), firstName: "You" }, // Display "You" if not defined
+        })),
+      ]);
+      setNewMessage(""); // Reset input
+      scrollToBottom(); // Auto-scroll after sending
+    } catch (error) {
+      console.error("Error sending message to all admins:", error);
+    }
+  };
+
+  // Function to auto-scroll to the bottom
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      {/* Dialog Content */}
+      <DialogContent className="flex flex-col max-h-[600px]" aria-describedby="dialog-description">
+        <DialogHeader>
+          <DialogTitle>Discussion</DialogTitle>
+          <p id="dialog-description" className="sr-only">
+            This is the discussion dialog where you can chat with admins.
+          </p>
+        </DialogHeader>
+        <div className="flex flex-col flex-grow rounded-lg">
+          <Card className="flex-grow p-4 overflow-y-auto max-h-[400px]">
+            {loading ? (
+              <p className="text-center text-gray-500">Loading messages...</p>
+            ) : (
+              <div className="flex flex-col gap-1">
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`flex ${
+                      message.sender.id === getId() ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[720px] p-2 rounded-xl ${
+                        message.sender.id === getId()
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white"
+                      }`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                    </div>
+                  </div>
+                ))}
+                {/* Reference for scrolling to bottom */}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </Card>
+          <div className="flex items-center gap-2 py-4 px-1">
+            <Input
+              placeholder="Type your message..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              className="flex px-4 py-2 rounded-lg dark:text-white"
+            />
+            <Button className="w-[80px]" onClick={sendMessage}>
+              Envoyer
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default Helper;
