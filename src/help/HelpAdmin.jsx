@@ -1,98 +1,113 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import api from '@/security/auth/Api';
+import DiscussionsList from '@/help/components/DiscussionsList';
+import MessagesPanel from '@/help/components/MessagesPanel';
+import MessageInput from '@/help/components/MessageInput';
 
 const HelpAdmin = () => {
-  // État des discussions
-  const [discussions, setDiscussions] = useState([
-    { id: 1, user: "User1", lastMessage: "Bonjour, j'ai un problème" },
-    { id: 2, user: "User2", lastMessage: "Comment utiliser cette fonctionnalité ?" },
-    { id: 3, user: "User3", lastMessage: "Merci pour votre aide !" },
-  ]);
+  const [discussions, setDiscussions] = useState([]);
+  const [activeChat, setActiveChat] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [lastMessageId, setLastMessageId] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // État des messages par discussion
-  const [messages, setMessages] = useState({
-    1: [
-      { sender: "User1", text: "Bonjour, j'ai un problème" },
-      { sender: "Admin", text: "Bonjour, je vous écoute !" },
-    ],
-    2: [
-      { sender: "User2", text: "Comment utiliser cette fonctionnalité ?" },
-      { sender: "Admin", text: "Voici comment procéder..." },
-    ],
-    3: [
-      { sender: "User3", text: "Merci pour votre aide !" },
-      { sender: "Admin", text: "Avec plaisir 😊" },
-    ],
-  });
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await api.get('/api/v1/user');
+        setCurrentUser(response.data);
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+      }
+    };
 
-  // État pour suivre la discussion sélectionnée
-  const [activeDiscussion, setActiveDiscussion] = useState(null);
+    const fetchDiscussions = async () => {
+      try {
+        const response = await api.get('/support/discussions');
+        const formattedDiscussions = formatDiscussions(response.data);
+        setDiscussions(formattedDiscussions);
+        if (formattedDiscussions.length > 0) {
+          handleChatSelect(formattedDiscussions[0].chatId);
+        }
+      } catch (error) {
+        console.error('[HelpAdmin] Error fetching discussions:', error);
+      }
+    };
+
+    fetchCurrentUser();
+    fetchDiscussions();
+  }, []);
+
+  const formatDiscussions = (data) => {
+    return Object.entries(data)
+      .map(([userKey, messages]) => {
+        const sortedMessages = messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        const lastMessage = sortedMessages[0];
+        return {
+          chatId: lastMessage.sender.role === 'USER' ? lastMessage.sender.id : lastMessage.receivers[0].id,
+          userName: lastMessage.sender.role === 'USER'
+            ? `${lastMessage.sender.firstName} ${lastMessage.sender.lastName}`
+            : `${lastMessage.receivers[0].firstName} ${lastMessage.receivers[0].lastName}`,
+          lastMessage: lastMessage.content,
+          lastMessageTime: new Date(lastMessage.timestamp).toISOString(),
+        };
+      })
+      .sort((a, b) => new Date(b.lastMessageTime) - new Date(a.lastMessageTime));
+  };
+
+  const handleChatSelect = async (chatId) => {
+    setActiveChat(chatId);
+    try {
+      const response = await api.get(`/messages/user/${chatId}/admins`);
+      setMessages(response.data);
+    } catch (error) {
+      console.error('[HelpAdmin] Error fetching messages:', error);
+    }
+    setLastMessageId(null);
+  };
+
+  const sendMessage = async () => {
+    if (newMessage.trim() === '' || !activeChat || !currentUser) return;
+
+    try {
+      const messageData = {
+        content: newMessage,
+        sender: { id: currentUser.id },
+        receivers: [{ id: activeChat }],
+      };
+
+      const response = await api.post('/messages', messageData);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { ...response.data },
+      ]);
+      setNewMessage('');
+      setLastMessageId(response.data.id);
+
+      const discussions = await api.get('/support/discussions');
+      setDiscussions(formatDiscussions(discussions.data));
+    } catch (error) {
+      console.error('[HelpAdmin] Error sending message:', error);
+    }
+  };
 
   return (
-    <div className="support-container">
-      {/* Sidebar */}
-      <div className="sidebar">
-        <h2>Discussions</h2>
-        {discussions.map((discussion) => (
-          <div
-            key={discussion.id}
-            className={`discussion-item ${
-              activeDiscussion === discussion.id ? "active" : ""
-            }`}
-            onClick={() => setActiveDiscussion(discussion.id)}
-          >
-            <strong>{discussion.user}</strong>
-            <p>{discussion.lastMessage}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Messages */}
-      <div className="chat">
-        {activeDiscussion ? (
-          <>
-            <h3>
-              Discussion avec{" "}
-              {discussions.find((d) => d.id === activeDiscussion)?.user}
-            </h3>
-            <div className="messages">
-              {messages[activeDiscussion]?.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`message ${
-                    msg.sender === "Admin" ? "admin-message" : "user-message"
-                  }`}
-                >
-                  <span>{msg.sender}:</span>
-                  <p>{msg.text}</p>
-                </div>
-              ))}
-            </div>
-            <div className="message-input">
-              <input
-                type="text"
-                placeholder="Écrire un message..."
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && e.target.value.trim() !== "") {
-                    const newMessage = {
-                      sender: "Admin",
-                      text: e.target.value,
-                    };
-                    setMessages((prev) => ({
-                      ...prev,
-                      [activeDiscussion]: [
-                        ...(prev[activeDiscussion] || []),
-                        newMessage,
-                      ],
-                    }));
-                    e.target.value = "";
-                  }
-                }}
-              />
-            </div>
-          </>
-        ) : (
-          <p className="no-discussion">Sélectionnez une discussion pour commencer</p>
-        )}
+    <div className="h-[calc(100vh-72px)] overflow-hidden">
+      <div className="grid grid-cols-[25%_75%] h-full m-0 p-0">
+        <DiscussionsList
+          discussions={discussions}
+          activeChat={activeChat}
+          onChatSelect={handleChatSelect}
+        />
+        <div className="border flex flex-col justify-end items-center h-full bg-[url('/public/image_1.png')] bg-[length:150%] bg-center overflow-y-auto">
+          <MessagesPanel messages={messages} lastMessageId={lastMessageId} />
+          <MessageInput
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            onSendMessage={sendMessage}
+          />
+        </div>
       </div>
     </div>
   );
