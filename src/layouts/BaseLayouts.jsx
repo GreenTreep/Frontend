@@ -9,15 +9,16 @@ const BaseLayout = () => {
   const isLoginPage = location.pathname === '/login';
   const isRegisterPage = location.pathname === '/register';
   const isMapBoxPage = location.pathname === '/mapbox';
+  const isHelpAdminPage = location.pathname === '/help-admin';
 
   return (
     <div className="min-h-screen relative">
-      <Background />
+      {!isHelpAdminPage && <Background />}
       {!isRegisterPage && !isLoginPage && !isMapBoxPage && <Header />} {/* Affiche le Header sauf sur /login et /register */}
       <main className="relative z-10"> {/* Ajustez pt-20 selon la hauteur de votre Header */}
         <Outlet />
       </main>
-      {!isRegisterPage && !isLoginPage && !isMapBoxPage && <Footer />}
+      {!isRegisterPage && !isLoginPage && !isMapBoxPage && !isHelpAdminPage && <Footer />}
     </div>
   );
 };
