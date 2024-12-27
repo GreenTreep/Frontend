@@ -15,7 +15,7 @@ const HelpAdmin = () => {
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        const response = await api.get('/api/v1/user');
+        const response = await api.get('/user');
         setCurrentUser(response.data);
       } catch (error) {
         console.error('Error fetching current user:', error);
