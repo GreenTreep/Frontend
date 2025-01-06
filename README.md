@@ -27,7 +27,7 @@ GreenTrip permet aux utilisateurs de planifier leurs voyages en fonction de crit
 
 Regardez une courte démo vidéo :
 
-<a href="https://www.youtube.com/watch?v=0llbiwK4t14&t=88s" target="_blank">
+<a href="https://youtu.be/0llbiwK4t14?si=0pGa_L9PFxRP9JWh&t=48" target="_blank">
   <img src="https://img.youtube.com/vi/0llbiwK4t14/maxresdefault.jpg" alt="Regardez la démo vidéo de GreenTrip" />
 </a>
 
