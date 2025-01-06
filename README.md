@@ -23,12 +23,13 @@ GreenTrip permet aux utilisateurs de planifier leurs voyages en fonction de crit
 
 ## Présentation
 
-![GreenTrip](https://user-images.githubusercontent.com/123456789/greentrip-presentation.png)
 
 
-Ou regardez une courte démo vidéo :
+Regardez une courte démo vidéo :
 
-[![GreenTrip Video Demo](https://img.youtube.com/vi/VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=VIDEO_ID)
+<a href="https://www.youtube.com/watch?v=0llbiwK4t14&t=88s" target="_blank">
+  <img src="https://img.youtube.com/vi/0llbiwK4t14/maxresdefault.jpg" alt="Regardez la démo vidéo de GreenTrip" />
+</a>
 
 ---
 
