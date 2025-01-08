@@ -28,6 +28,8 @@ export default function Page() {
   const [transportMode, setTransportMode] = useState("driving");
   const [routeInstructions, setRouteInstructions] = useState([]);
   const [pois, setPois] = useState({ hotel: [], restaurant: [], gas_station: [], park: [] });
+  const [parcoursData, setParcoursData] = useState(null); // État pour les données GeoJSON
+
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
   const markersRef = useRef([]); // Stocker les marqueurs pour nettoyage ultérieur
@@ -129,6 +131,127 @@ export default function Page() {
 
     setPois(poisByCategory); // Mettre à jour les POI dans le state
     addMarkers(poisByCategory); // Ajouter les nouveaux marqueurs
+    // addParcoursMarkers(); // Ajouter les marqueurs pour les parcours
+  };
+
+  const addParcoursMarkers = (parcoursData) => {
+    if (!parcoursData || !parcoursData.features) return;
+  
+    const map = mapRef.current;
+    const allParcours = [];
+  
+    // Préparation des données pour les clusters
+    parcoursData.features.forEach((parcours) => {
+      const { coordinates } = parcours.geometry;
+      const { name, distance } = parcours.properties;
+      const [lat, lon] = coordinates;
+  
+      allParcours.push({
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [lon, lat],
+        },
+        properties: {
+          name,
+          distance, // Garder la distance pour l'affichage
+        },
+      });
+    });
+  
+    // Ajouter une source GeoJSON pour les clusters des parcours
+    map.addSource('parcours', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: allParcours,
+      },
+      cluster: true,
+      clusterMaxZoom: 14,
+      clusterRadius: 50,
+    });
+  
+    // Ajouter des couches pour les clusters des parcours
+    map.addLayer({
+      id: 'parcours-clusters',
+      type: 'circle',
+      source: 'parcours',
+      filter: ['has', 'point_count'],
+      paint: {
+        'circle-color': '#51bbd6',
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['get', 'point_count'],
+          0,
+          20,
+          100,
+          40,
+        ],
+      },
+    });
+  
+    // Ajouter une couche pour afficher le nombre de points dans chaque cluster
+    map.addLayer({
+      id: 'parcours-cluster-count',
+      type: 'symbol',
+      source: 'parcours',  
+      filter: ['has', 'point_count'],
+      layout: {
+        'text-field': '{point_count_abbreviated}', // Afficher le nombre abrégé de points dans le cluster
+        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-size': 12,
+      },
+      paint: {
+        'text-color': '#ffffff',
+      },
+    });
+  
+    // Ajouter une couche pour les parcours individuels (non clusterisés)
+    map.addLayer({
+      id: 'parcours-individual-points',
+      type: 'circle',
+      source: 'parcours',
+      filter: ['!has', 'point_count'],
+      paint: {
+        'circle-color': '#f28cb1',
+        'circle-radius': 15,
+      },
+    });
+  
+    // Événement de clic sur le cluster pour zoomer
+    map.on('click', 'parcours-cluster-count', (e) => {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['parcours-cluster-count'],
+      });
+      const clusterId = features[0].properties.cluster_id;
+      map.getSource('parcours').getClusterExpansionZoom(clusterId, (err, zoom) => {
+        if (err) return;
+  
+        map.easeTo({
+          center: features[0].geometry.coordinates,
+          zoom: zoom,
+        });
+      });
+    });
+  
+    // Événement de clic sur les points individuels pour afficher un popup avec des détails
+    map.on('click', 'parcours-individual-points', (e) => {
+      const coordinates = e.features[0].geometry.coordinates.slice();
+      const name = e.features[0].properties.name;
+      const distance = e.features[0].properties.distance;
+  
+      // Conversion de la distance en kilomètres pour l'afficher dans le popup
+      const distanceInKm = (distance / 1000).toFixed(3);
+  
+      new mapboxgl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(`
+          <strong>${name}</strong><br>
+          <em>Distance: ${distanceInKm} km</em>
+        `)
+        .addTo(map);
+    });
   };
 
   const filterPoisByProximity = (pois, routeCoordinates, maxDistance) => {
@@ -204,38 +327,51 @@ export default function Page() {
   };
 
   useEffect(() => {
+    // Charger le fichier GeoJSON
+    fetch("/data_extraction/marqueurs3.geojson")
+      .then((response) => response.json())
+      .then((data) => {
+        setParcoursData(data);
+        addParcoursMarkers(data); // Appeler la fonction pour ajouter les marqueurs
+      })
+      .catch((error) => console.error("Erreur lors de la récupération des données GeoJSON:", error));
+  
     fetchRoute();
   }, [startCoords, endCoords, transportMode]);
-
-  return (
+  
+    return (
       <SidebarProvider>
         <AppSidebar
-            setStartCoords={setStartCoords}
-            setEndCoords={setEndCoords}
-            setTransportMode={setTransportMode}
-            transportMode={transportMode}
-            routeInstructions={routeInstructions}
-            pois={pois}
+          setStartCoords={setStartCoords}
+          setEndCoords={setEndCoords}
+          setTransportMode={setTransportMode}
+          transportMode={transportMode}
+          routeInstructions={routeInstructions}
+          pois={pois} // Ajout des POI dans la sidebar
         />
-
+    
         <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
-              <SidebarTrigger className="-ml-1" />
-            </div>
-          </header>
-          <div className="flex flex-1 flex-col gap-4 pt-0">
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
-              <MapDisplay
-                  mapRef={mapRef}
-                  mapContainerRef={mapContainerRef}
-                  startCoords={startCoords}
-                  endCoords={endCoords}
-                  isDarkMode={isDarkMode}
-              />
-            </div>
+          {/* SidebarTrigger uniquement */}
+          <div className="absolute top-2 left-2 z-10">
+            <SidebarTrigger className="p-2 rounded-full  shadow-md" />
+          </div>
+    
+          {/* MapDisplay pour prendre tout l'espace */}
+          <div
+            className="flex flex-1 relative min-h-screen"
+            style={{ height: "100vh" }} // S'assure que la carte prend toute la hauteur
+          >
+            <MapDisplay
+              mapRef={mapRef}
+              mapContainerRef={mapContainerRef}
+              startCoords={startCoords}
+              endCoords={endCoords}
+              isDarkMode={isDarkMode}
+            />
           </div>
         </SidebarInset>
       </SidebarProvider>
-  );
-}
+    );
+
+  };
+    
