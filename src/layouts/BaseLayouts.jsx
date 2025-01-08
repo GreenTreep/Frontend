@@ -13,7 +13,7 @@ const BaseLayout = () => {
 
   return (
     <div className="min-h-screen relative">
-      {!isHelpAdminPage && <Background />}
+      {!isMapBoxPage && !isHelpAdminPage &&  <Background />}
       {!isRegisterPage && !isLoginPage && !isMapBoxPage && <Header />} {/* Affiche le Header sauf sur /login et /register */}
       <main className="relative z-10"> {/* Ajustez pt-20 selon la hauteur de votre Header */}
         <Outlet />

@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import Helper from '@/help/Helper.jsx';
+import { CircleUserRound } from 'lucide-react';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -53,14 +54,16 @@ const Header = () => {
         
         <div>{renderUserOptions()}</div>
         
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
           {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger aria-label="User Menu">
-                {user.firstName}
+            <DropdownMenu className="mt-10" modal={false}>
+              <DropdownMenuTrigger className="flex items-center ">
+                <Button size="icon">
+                  <CircleUserRound className='' />
+                </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuContent className="">
+                <DropdownMenuLabel>{user.firstName}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>Déconnexion</DropdownMenuItem>
               </DropdownMenuContent>
