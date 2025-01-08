@@ -17,6 +17,8 @@ import { CircleUserRound } from 'lucide-react';
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const isHelpAdminPage = location.pathname === '/help-admin';
+
 
   const handleLogout = () => {
     try {
@@ -66,10 +68,10 @@ const Header = () => {
                 <DropdownMenuItem onClick={handleLogout}>Déconnexion</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
+          ) : (!isHelpAdminPage &&
             <Link to="/login" className="px-2">
               <Button className="px-7 py-2">Login</Button>
-            </Link>
+            </Link> 
           )}
           <ModeToggle />
         </div>
