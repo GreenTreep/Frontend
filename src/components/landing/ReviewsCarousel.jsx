@@ -1,7 +1,7 @@
 // src/components/ReviewsCarousel.jsx
 
 import React from 'react';
-import { Card, CardHeader, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Icon } from '@iconify/react';
 import EmblaCarousel from '../ui/EmblaCarousel';
 import peakpx from '@/assets/peakpx.jpg';
