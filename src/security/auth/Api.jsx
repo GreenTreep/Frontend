@@ -1,13 +1,10 @@
 import axios from 'axios';
 import { useAuth } from '@/security/auth/AuthContext';
+import config from '@/config/baseUrl'; // Importez le fichier de configuration
 
-const baseURL =
-  window.location.hostname === 'localhost'
-    ? 'http://localhost:8080/api/v1' // En local, utilise le port 8080.
-    : 'https://api.greentrip.us/api/v1'; // Sur le VPS, spécifie le port 8080 pour l'API.
 
 const api = axios.create({
-  baseURL,
+  baseURL: config.apiBaseUrl,
 });
 
 api.interceptors.request.use(
