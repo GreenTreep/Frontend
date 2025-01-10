@@ -1,0 +1,39 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        lfs: true
+
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '21'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Deploy to server
+      uses: appleboy/scp-action@v0.2.1
+      with:
+        host: 157.245.41.10
+        username: root
+        password: ${{ secrets.SERVER_PASSWORD }}
+        source: dist/*
+        target: /opt/greentrip/Frontend/dist/
