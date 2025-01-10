@@ -2,7 +2,8 @@
 
 **GreenTrip**, l'application pour découvrir des voyages écologiques et des parcours en plein air respectueux de l'environnement.
 
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)  [![Contributors](https://img.shields.io/github/contributors/GreenTreep/Frontend)](https://github.com/GreenTreep/Frontend/graphs/contributors)  [![GitHub last commit](https://img.shields.io/github/last-commit/GreenTreep/Frontend/develop)](https://github.com/GreenTreep/Frontend/commits/main)  [![GitHub issues](https://img.shields.io/github/issues/GreenTreep/Frontend)](https://github.com/GreenTreep/Frontend/issues)  
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)  [![Contributors](https://img.shields.io/github/contributors/GreenTreep/Frontend)](https://github.com/GreenTreep/Frontend/graphs/contributors)  [![GitHub last commit](https://img.shields.io/github/last-commit/GreenTreep/Frontend/develop)](https://github.com/GreenTreep/Frontend/commits/main)  [![GitHub issues](https://img.shields.io/github/issues/GreenTreep/Frontend)](https://github.com/GreenTreep/Frontend/issues)  [![Deployment Status](https://img.shields.io/github/actions/workflow/status/GreenTreep/Frontend/pipeline_ci.yml?branch=main&label=deploy)](https://github.com/GreenTreep/Frontend/actions) [![Node.js version](https://img.shields.io/badge/node-%3E%3D%2018-green)](https://nodejs.org/)
+
  
 
 
