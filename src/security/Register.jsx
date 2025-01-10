@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '@/security/auth/Api';
 
 function Register() {
   const [firstName, setFirstName] = useState('');
@@ -34,7 +35,7 @@ function Register() {
     }
 
     try {
-      await axios.post('http://localhost:8080/api/v1/auth/register', {
+      await api.post('/auth/register', {
         firstName,
         lastName,
         email,

@@ -1,7 +1,5 @@
 import tailwindcssAnimate from 'tailwindcss-animate';
 
-import tailwindcssAnimate from 'tailwindcss-animate';
-
 /** @type {import('tailwindcss').Config} */
 export default {
     darkMode: ["class"],
@@ -21,9 +19,14 @@ export default {
   					opacity: '1',
   					transform: 'translateY(0)'
   				}
-  			}
+  			},
+              pop: {
+                '0%': { opacity: '0', transform: 'scale(0.9) translateY(20px)' },
+                '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+            }
   		},
   		animation: {
+            pop: 'pop 0.3s ease-in-out',
   			slidein300: 'slidein 1s ease 300ms forwards',
   			slidein500: 'slidein 1s ease 500ms forwards',
   			slidein700: 'slidein 1s ease 700ms forwards'
@@ -85,8 +88,8 @@ export default {
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
   			}
-		}
-	}
+  		}
+  	}
   },
-  plugins: [tailwindcssAnimate],
+  plugins: [(tailwindcssAnimate)],
 }

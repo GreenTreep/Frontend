@@ -1,7 +1,7 @@
-// Helper.jsx
 import React, { useState, useEffect, useRef } from "react";
 import {
   Dialog,
+  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -12,25 +12,26 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/security/auth/AuthContext";
 import api from "@/security/auth/Api";
 
-const Helper = ({ isOpen, onClose }) => {
-  const { getId, user } = useAuth(); // Get user ID and info
-  const [messages, setMessages] = useState([]); // Messages list
-  const [newMessage, setNewMessage] = useState(""); // New message content
-  const [loading, setLoading] = useState(false); // Loading indicator
-  const messagesEndRef = useRef(null); // Ref for auto-scrolling
+const Helper = () => {
+  const { getId, user } = useAuth(); // Récupère l'ID et les informations de l'utilisateur connecté
+  const [messages, setMessages] = useState([]); // Liste des messages
+  const [newMessage, setNewMessage] = useState(""); // Contenu du nouveau message
+  const [lastMessageId, setLastMessageId] = useState(null); // ID du dernier message
+  const [loading, setLoading] = useState(false); // Indicateur de chargement
+  const messagesEndRef = useRef(null); // Référence pour le scroll automatique
 
-  // Fetch messages on component mount or when user changes
+  // Charger les messages au montage du composant
   useEffect(() => {
     const fetchMessages = async () => {
-      if (!user || user.role !== "USER") return; // Ensure user is a USER
+      if (!user || user.role !== "USER") return; // Vérifie que l'utilisateur est un USER
 
       const userId = getId();
       setLoading(true);
       try {
-        const response = await api.get(`/messages/user/${userId}/admins`); // Fetch messages
+        const response = await api.get(`/messages/user/${userId}/admins`); // Récupère les messages avec les admins
         console.log("Messages fetched:", response.data);
         setMessages(response.data);
-        scrollToBottom(); // Auto-scroll after loading
+        scrollToBottom(); // Scrolle automatiquement en bas après le chargement
       } catch (error) {
         console.error("Error fetching messages:", error);
       } finally {
@@ -41,38 +42,39 @@ const Helper = ({ isOpen, onClose }) => {
     fetchMessages();
   }, [getId, user]);
 
-  // Send a message to all admins
+  // Envoyer un message à tous les administrateurs
   const sendMessage = async () => {
-    if (!newMessage.trim() || user.role !== "USER") return; // Only USER can send
+    if (!newMessage.trim() || user.role !== "USER") return; // Seul le USER peut envoyer des messages
 
     const messagePayload = {
-      content: newMessage, // Message content
+      content: newMessage, // Contenu du message
       sender: {
-        id: getId(), // Sender ID
+        id: getId(), // ID de l'utilisateur connecté
       },
     };
 
     try {
-      const response = await api.post("/messages/from-user", messagePayload); // Send message
+      const response = await api.post("/messages/from-user", messagePayload); // Envoie le message à tous les admins
       console.log("Response from server:", response.data);
 
-      // Update messages locally without reloading
+      // Met à jour les messages localement sans rechargement
       const newMessages = Array.isArray(response.data) ? response.data : [response.data];
       setMessages((prevMessages) => [
         ...prevMessages,
         ...newMessages.map((msg) => ({
           ...msg,
-          sender: msg.sender || { id: getId(), firstName: "You" }, // Display "You" if not defined
+          sender: msg.sender || { id: getId(), firstName: "You" }, // Affiche "You" si pas défini
         })),
       ]);
-      setNewMessage(""); // Reset input
-      scrollToBottom(); // Auto-scroll after sending
+      setNewMessage(""); // Réinitialise le champ
+      setLastMessageId(response.data.id); // Définit l'ID du dernier message
+      scrollToBottom(); // Scrolle automatiquement après l'envoi
     } catch (error) {
       console.error("Error sending message to all admins:", error);
     }
   };
 
-  // Function to auto-scroll to the bottom
+  // Fonction pour scroller automatiquement en bas
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -80,14 +82,16 @@ const Helper = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      {/* Dialog Content */}
-      <DialogContent className="flex flex-col max-h-[600px]" aria-describedby="dialog-description">
+    <Dialog>
+      {/* Le bouton qui ouvre la boîte de dialogue */}
+      <DialogTrigger asChild>
+        <Button className="px-7 py-2">Help</Button>
+      </DialogTrigger>
+
+      {/* Contenu de la boîte de dialogue */}
+      <DialogContent className="flex flex-col max-h-[600px]">
         <DialogHeader>
           <DialogTitle>Discussion</DialogTitle>
-          <p id="dialog-description" className="sr-only">
-            This is the discussion dialog where you can chat with admins.
-          </p>
         </DialogHeader>
         <div className="flex flex-col flex-grow rounded-lg">
           <Card className="flex-grow p-4 overflow-y-auto max-h-[400px]">
@@ -107,13 +111,15 @@ const Helper = ({ isOpen, onClose }) => {
                         message.sender.id === getId()
                           ? "bg-green-500 text-white"
                           : "bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white"
-                      }`}
+                      } ${
+                        lastMessageId === message.id ? "animate-pop" : ""
+                      }`} // Ajout de l'animation
                     >
                       <p className="text-sm">{message.content}</p>
                     </div>
                   </div>
                 ))}
-                {/* Reference for scrolling to bottom */}
+                {/* Référence pour scroller en bas */}
                 <div ref={messagesEndRef} />
               </div>
             )}
