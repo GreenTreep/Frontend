@@ -1,16 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/security/auth/AuthContext";
 import api from "@/security/auth/Api";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 const Helper = () => {
   const { getId, user } = useAuth(); // Récupère l'ID et les informations de l'utilisateur connecté
@@ -19,6 +15,7 @@ const Helper = () => {
   const [lastMessageId, setLastMessageId] = useState(null); // ID du dernier message
   const [loading, setLoading] = useState(false); // Indicateur de chargement
   const messagesEndRef = useRef(null); // Référence pour le scroll automatique
+  const [stompClient, setStompClient] = useState(null);
 
   // Charger les messages au montage du composant
   useEffect(() => {
@@ -29,7 +26,6 @@ const Helper = () => {
       setLoading(true);
       try {
         const response = await api.get(`/messages/user/${userId}/admins`); // Récupère les messages avec les admins
-        console.log("Messages fetched:", response.data);
         setMessages(response.data);
         scrollToBottom(); // Scrolle automatiquement en bas après le chargement
       } catch (error) {
@@ -42,7 +38,14 @@ const Helper = () => {
     fetchMessages();
   }, [getId, user]);
 
-  // Envoyer un message à tous les administrateurs
+  // Fonction pour scroller automatiquement en bas
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // Envoyer un message à tous les administrateurs via WebSocket
   const sendMessage = async () => {
     if (!newMessage.trim() || user.role !== "USER") return; // Seul le USER peut envoyer des messages
 
@@ -54,41 +57,58 @@ const Helper = () => {
     };
 
     try {
-      const response = await api.post("/messages/from-user", messagePayload); // Envoie le message à tous les admins
-      console.log("Response from server:", response.data);
+      // Envoie le message via WebSocket
+      stompClient.send("/app/message", {}, JSON.stringify(messagePayload));
 
-      // Met à jour les messages localement sans rechargement
-      const newMessages = Array.isArray(response.data) ? response.data : [response.data];
       setMessages((prevMessages) => [
         ...prevMessages,
-        ...newMessages.map((msg) => ({
-          ...msg,
-          sender: msg.sender || { id: getId(), firstName: "You" }, // Affiche "You" si pas défini
-        })),
+        { ...messagePayload, sender: { id: getId(), firstName: "You" } },
       ]);
       setNewMessage(""); // Réinitialise le champ
-      setLastMessageId(response.data.id); // Définit l'ID du dernier message
       scrollToBottom(); // Scrolle automatiquement après l'envoi
     } catch (error) {
-      console.error("Error sending message to all admins:", error);
+      console.error("Error sending message:", error);
     }
   };
 
-  // Fonction pour scroller automatiquement en bas
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  useEffect(() => {
+    if (!user) return;
+
+    const client = new Client({
+      brokerURL: "ws://localhost:8080/ws", // L'URL de ton serveur WebSocket
+      connectHeaders: {},
+      debug: (str) => {
+        console.log(str);
+      },
+      onConnect: () => {
+        console.log("Connected to WebSocket");
+        // S'abonner au topic pour recevoir les messages des admins
+        client.subscribe(`/topic/messages/${getId()}`, (messageOutput) => {
+          const message = JSON.parse(messageOutput.body);
+          setMessages((prevMessages) => [...prevMessages, message]);
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+      },
+      reconnectDelay: 5000,
+    });
+
+    client.activate();
+    setStompClient(client);
+
+    return () => {
+      if (client) {
+        client.deactivate();
+      }
+    };
+  }, [getId, user]);
 
   return (
     <Dialog>
-      {/* Le bouton qui ouvre la boîte de dialogue */}
       <DialogTrigger asChild>
         <Button className="px-7 py-2">Help</Button>
       </DialogTrigger>
-
-      {/* Contenu de la boîte de dialogue */}
       <DialogContent className="flex flex-col max-h-[600px]">
         <DialogHeader>
           <DialogTitle>Discussion</DialogTitle>
@@ -111,15 +131,12 @@ const Helper = () => {
                         message.sender.id === getId()
                           ? "bg-green-500 text-white"
                           : "bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white"
-                      } ${
-                        lastMessageId === message.id ? "animate-pop" : ""
-                      }`} // Ajout de l'animation
+                      } ${lastMessageId === message.id ? "animate-pop" : ""}`}
                     >
                       <p className="text-sm">{message.content}</p>
                     </div>
                   </div>
                 ))}
-                {/* Référence pour scroller en bas */}
                 <div ref={messagesEndRef} />
               </div>
             )}

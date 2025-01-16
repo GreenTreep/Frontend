@@ -1,37 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import api from '@/security/auth/Api';
-import DiscussionsList from '@/help/components/DiscussionsList';
-import MessagesPanel from '@/help/components/MessagesPanel';
-import MessageInput from '@/help/components/MessageInput';
+import React, { useState, useEffect } from "react";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import api from "@/security/auth/Api";
+import DiscussionsList from "@/help/components/DiscussionsList";
+import MessagesPanel from "@/help/components/MessagesPanel";
+import MessageInput from "@/help/components/MessageInput";
 
 const HelpAdmin = () => {
   const [discussions, setDiscussions] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [lastMessageId, setLastMessageId] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
+  const [stompClient, setStompClient] = useState(null);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
-        const response = await api.get('/user');
+        const response = await api.get("/user");
         setCurrentUser(response.data);
       } catch (error) {
-        console.error('Error fetching current user:', error);
+        console.error("Error fetching current user:", error);
       }
     };
 
     const fetchDiscussions = async () => {
       try {
-        const response = await api.get('/support/discussions');
+        const response = await api.get("/support/discussions");
         const formattedDiscussions = formatDiscussions(response.data);
         setDiscussions(formattedDiscussions);
         if (formattedDiscussions.length > 0) {
           handleChatSelect(formattedDiscussions[0].chatId);
         }
       } catch (error) {
-        console.error('[HelpAdmin] Error fetching discussions:', error);
+        console.error("[HelpAdmin] Error fetching discussions:", error);
       }
     };
 
@@ -42,11 +45,13 @@ const HelpAdmin = () => {
   const formatDiscussions = (data) => {
     return Object.entries(data)
       .map(([userKey, messages]) => {
-        const sortedMessages = messages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        const sortedMessages = messages.sort(
+          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+        );
         const lastMessage = sortedMessages[0];
         return {
-          chatId: lastMessage.sender.role === 'USER' ? lastMessage.sender.id : lastMessage.receivers[0].id,
-          userName: lastMessage.sender.role === 'USER'
+          chatId: lastMessage.sender.role === "USER" ? lastMessage.sender.id : lastMessage.receivers[0].id,
+          userName: lastMessage.sender.role === "USER"
             ? `${lastMessage.sender.firstName} ${lastMessage.sender.lastName}`
             : `${lastMessage.receivers[0].firstName} ${lastMessage.receivers[0].lastName}`,
           lastMessage: lastMessage.content,
@@ -62,13 +67,13 @@ const HelpAdmin = () => {
       const response = await api.get(`/messages/user/${chatId}/admins`);
       setMessages(response.data);
     } catch (error) {
-      console.error('[HelpAdmin] Error fetching messages:', error);
+      console.error("[HelpAdmin] Error fetching messages:", error);
     }
     setLastMessageId(null);
   };
 
   const sendMessage = async () => {
-    if (newMessage.trim() === '' || !activeChat || !currentUser) return;
+    if (newMessage.trim() === "" || !activeChat || !currentUser) return;
 
     try {
       const messageData = {
@@ -77,20 +82,52 @@ const HelpAdmin = () => {
         receivers: [{ id: activeChat }],
       };
 
-      const response = await api.post('/messages', messageData);
+      const response = await api.post("/messages", messageData);
       setMessages((prevMessages) => [
         ...prevMessages,
         { ...response.data },
       ]);
-      setNewMessage('');
+      setNewMessage("");
       setLastMessageId(response.data.id);
 
-      const discussions = await api.get('/support/discussions');
+      const discussions = await api.get("/support/discussions");
       setDiscussions(formatDiscussions(discussions.data));
     } catch (error) {
-      console.error('[HelpAdmin] Error sending message:', error);
+      console.error("[HelpAdmin] Error sending message:", error);
     }
   };
+
+  useEffect(() => {
+    // Configurer WebSocket avec StompJS et SockJS
+    const client = new Client({
+      brokerURL: "ws://localhost:8080/ws", // L'URL de ton serveur WebSocket
+      connectHeaders: {},
+      debug: (str) => {
+        console.log(str);
+      },
+      onConnect: () => {
+        console.log("Connected to WebSocket");
+        // S'abonner à un topic spécifique pour recevoir les messages
+        client.subscribe(`/topic/messages/${activeChat}`, (messageOutput) => {
+          const message = JSON.parse(messageOutput.body);
+          setMessages((prevMessages) => [...prevMessages, message]);
+        });
+      },
+      onDisconnect: () => {
+        console.log("Disconnected from WebSocket");
+      },
+      reconnectDelay: 5000,
+    });
+
+    client.activate();
+    setStompClient(client);
+
+    return () => {
+      if (client) {
+        client.deactivate();
+      }
+    };
+  }, [activeChat]);
 
   return (
     <div className="h-[calc(100vh-72px)] overflow-hidden">
