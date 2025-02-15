@@ -62,6 +62,13 @@ export default function Page() {
     initializeCoords();
   }, [startCity, endCity]);
 
+  // Ajoutez un autre useEffect pour mettre à jour le trajet
+  useEffect(() => {
+    if (startCoords && endCoords) {
+      fetchRoute(waypoints); // Appelez fetchRoute avec les waypoints actuels
+    }
+  }, [startCoords, endCoords, waypoints]);
+
   const fetchSuggestions = async (query) => {
     if (query.length < 3) {
       setSuggestions([]); // Ne pas afficher de suggestions si la requête est trop courte
