@@ -7,6 +7,8 @@ import MapDisplay from "@/components/sidebar/MapDisplay";
 import mapboxgl from "mapbox-gl";
 import { useTheme } from "@/hooks/theme-provider";
 import { useLocation } from "react-router-dom";
+import { NavMain } from "@/components/sidebar/nav-main";
+import { FaTrash, FaEye, FaEyeSlash } from "react-icons/fa";
 
 mapboxgl.accessToken = "pk.eyJ1Ijoic3lsdmFpbmNvc3RlcyIsImEiOiJjbTNxZXNtN3cwa2hpMmpxdWd2cndhdnYwIn0.V2ZAp-BqZq6KIHQ6Lu8eAQ";
 
@@ -25,10 +27,15 @@ const fetchCoordinatesFromCity = async (city) => {
 export default function Page() {
   const [startCoords, setStartCoords] = useState(null);
   const [endCoords, setEndCoords] = useState(null);
+  const [waypoints, setWaypoints] = useState([]); // Déclaration de setWaypoints
   const [transportMode, setTransportMode] = useState("driving");
   const [routeInstructions, setRouteInstructions] = useState([]);
   const [pois, setPois] = useState({ hotel: [], restaurant: [], gas_station: [], park: [] });
   const [parcoursData, setParcoursData] = useState(null); // État pour les données GeoJSON
+  const [query, setQuery] = useState(""); // État pour le champ de saisie
+  const [suggestions, setSuggestions] = useState([]); // État pour les suggestions
+  const [showWaypoints, setShowWaypoints] = useState(true); // État pour contrôler la visibilité des villes de passage
+  const [showWaypointsBox, setShowWaypointsBox] = useState(true); // État pour contrôler la visibilité de la boîte des villes de passage
 
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -55,11 +62,91 @@ export default function Page() {
     initializeCoords();
   }, [startCity, endCity]);
 
+  const fetchSuggestions = async (query) => {
+    if (query.length < 3) {
+      setSuggestions([]); // Ne pas afficher de suggestions si la requête est trop courte
+      return;
+    }
 
-  const fetchRoute = async () => {
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxgl.accessToken}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      const results = data.features.map((feature) => ({
+        name: feature.place_name,
+        coords: feature.geometry.coordinates,
+      }));
+      setSuggestions(results); // Mettre à jour l'état avec les suggestions
+    } catch (error) {
+      console.error("Erreur lors de la récupération des suggestions :", error);
+    }
+  };
+
+  const handleQueryChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    fetchSuggestions(value); // Appeler la fonction pour récupérer les suggestions
+  };
+
+  const addWaypoint = (suggestion) => {
+    if (suggestion) {
+      const exists = waypoints.some((waypoint) => waypoint.name === suggestion.name);
+      if (exists) {
+        alert("Cette ville est déjà ajoutée comme point de passage.");
+        return;
+      }
+
+      // Ajoutez la ville à la liste des waypoints
+      setWaypoints((prevWaypoints) => {
+        const newWaypoints = [
+          ...prevWaypoints,
+          { name: suggestion.name, coords: suggestion.coords },
+        ];
+
+        // Mettre à jour le chemin après l'ajout
+        fetchRoute(newWaypoints); // Passez les nouveaux waypoints à fetchRoute
+
+        return newWaypoints;
+      });
+
+      // Créer un marqueur jaune sur la carte
+      const marker = new mapboxgl.Marker({ color: "yellow" })
+        .setLngLat(suggestion.coords)
+        .setPopup(new mapboxgl.Popup().setHTML(`<strong>${suggestion.name}</strong>`))
+        .addTo(mapRef.current);
+      
+      markersRef.current.push(marker); // Ajouter le marqueur à la référence
+
+      setQuery("");
+      setSuggestions([]);
+    }
+  };
+
+  const removeWaypoint = (index) => {
+    setWaypoints((prevWaypoints) => {
+      const newWaypoints = prevWaypoints.filter((_, i) => i !== index);
+      
+      if (markersRef.current[index]) {
+        markersRef.current[index].remove(); // Supprimez le marqueur de la carte
+        markersRef.current.splice(index, 1); // Supprimez le marqueur de la référence
+      }
+      
+      // Mettre à jour le chemin après la suppression
+      fetchRoute(newWaypoints); // Passez les nouveaux waypoints à fetchRoute
+
+      return newWaypoints;
+    });
+  };
+
+  const fetchRoute = async (waypointsToUse) => {
     if (!startCoords || !endCoords) return;
 
-    const url = `https://api.mapbox.com/directions/v5/mapbox/${transportMode}/${startCoords[0]},${startCoords[1]};${endCoords[0]},${endCoords[1]}?geometries=geojson&steps=true&access_token=${mapboxgl.accessToken}`;
+    const waypointCoords = waypointsToUse.map((waypoint) => waypoint.coords);
+    const routePath = [startCoords, ...waypointCoords, endCoords]
+        .map(([lng, lat]) => `${lng},${lat}`)
+        .join(";");
+
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${routePath}?geometries=geojson&steps=true&access_token=${mapboxgl.accessToken}`;
     try {
       const response = await fetch(url);
       const data = await response.json();
@@ -80,8 +167,6 @@ export default function Page() {
           paint: { "line-color": "#007bff", "line-width": 5 },
         });
 
-        mapRef.current.fitBounds([startCoords, endCoords], { padding: 50 });
-
         setRouteInstructions(
             steps.map((step) => ({
               instruction: step.maneuver.instruction,
@@ -93,7 +178,7 @@ export default function Page() {
         fetchPois(route); // Rechercher les POI
       }
     } catch (error) {
-      console.error("Erreur lors de la récupération de l’itinéraire :", error);
+      console.error("Erreur lors de la récupération de l'itinéraire :", error);
     }
   };
 
@@ -326,6 +411,24 @@ export default function Page() {
     });
   };
 
+  const addWaypointMarker = (suggestion) => {
+    if (suggestion) {
+      // Ajoutez la ville à la liste des waypoints
+      setWaypoints((prevWaypoints) => [
+        ...prevWaypoints,
+        { name: suggestion.name, coords: suggestion.coords },
+      ]);
+      
+      // Appeler la fonction pour ajouter le marqueur sur la carte
+      const marker = new mapboxgl.Marker({ color: "yellow" }) // Marqueur jaune
+        .setLngLat(suggestion.coords)
+        .setPopup(new mapboxgl.Popup().setHTML(`<strong>${suggestion.name}</strong>`))
+        .addTo(mapRef.current);
+      
+      markersRef.current.push(marker); // Ajouter le marqueur à la référence
+    }
+  };
+
   useEffect(() => {
     // Charger le fichier GeoJSON
     fetch("/data_extraction/marqueurs3.geojson")
@@ -338,40 +441,91 @@ export default function Page() {
   
     fetchRoute();
   }, [startCoords, endCoords, transportMode]);
-  
-    return (
+
+  return (
       <SidebarProvider>
         <AppSidebar
-          setStartCoords={setStartCoords}
-          setEndCoords={setEndCoords}
-          setTransportMode={setTransportMode}
-          transportMode={transportMode}
-          routeInstructions={routeInstructions}
+            setStartCoords={setStartCoords}
+            setEndCoords={setEndCoords}
+          waypoints={waypoints}
+          setWaypoints={setWaypoints}
+            setTransportMode={setTransportMode}
+            transportMode={transportMode}
+            routeInstructions={routeInstructions}
           pois={pois} // Ajout des POI dans la sidebar
         />
-    
+
         <SidebarInset>
-          {/* SidebarTrigger uniquement */}
           <div className="absolute top-2 left-2 z-10">
-            <SidebarTrigger className="p-2 rounded-full  shadow-md" />
+            <SidebarTrigger className="p-2 rounded-full shadow-md" />
           </div>
-    
-          {/* MapDisplay pour prendre tout l'espace */}
-          <div
-            className="flex flex-1 relative min-h-screen"
-            style={{ height: "100vh" }} // S'assure que la carte prend toute la hauteur
-          >
+
+          <div className="flex flex-1 relative min-h-screen" style={{ height: "100vh" }}>
             <MapDisplay
-              mapRef={mapRef}
-              mapContainerRef={mapContainerRef}
-              startCoords={startCoords}
-              endCoords={endCoords}
+                mapRef={mapRef}
+                mapContainerRef={mapContainerRef}
+                startCoords={startCoords}
+                endCoords={endCoords}
               isDarkMode={isDarkMode}
+                waypoints={waypoints}
             />
           </div>
+
+          {/* Boîte pour ajouter une ville de passage */}
+          {showWaypointsBox && ( // Affichez la boîte seulement si showWaypointsBox est vrai
+          <div className="absolute top-20 left-2 bg-white p-4 rounded shadow w-80">
+            <h4 className="font-semibold">Ajouter une ville (point de passage)</h4>
+            <div className="flex items-center mb-2">
+              <input
+                type="text"
+                placeholder="Ajouter une ville (point de passage)"
+                className="p-2 border border-gray-300 rounded w-full"
+                value={query}
+                onChange={handleQueryChange}
+              />
+            </div>
+            <ul className="mt-2 bg-gray-100 rounded shadow">
+              {suggestions.map((suggestion, index) => (
+                <li
+                  key={index}
+                  className="p-2 cursor-pointer hover:bg-blue-100"
+                  onClick={() => addWaypoint(suggestion)}
+                >
+                  {suggestion.name}
+                </li>
+              ))}
+            </ul>
+
+            {/* Liste des villes de passage ajoutées */}
+            <div className="mt-4">
+              <h4 className="font-semibold">Villes de passage :</h4>
+              <ul className="mt-2">
+                {waypoints.map((waypoint, index) => (
+                  <li key={index} className="flex items-center justify-between p-2 bg-gray-200 rounded mb-2">
+                    <span>{waypoint.name}</span>
+                    <button
+                      onClick={() => removeWaypoint(index)}
+                      className="text-red-500 hover:underline"
+                    >
+                      <FaTrash />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          )}
+
+          {/* Icône d'œil fixe pour cacher ou afficher la boîte d'ajout de ville de passage */}
+          <button
+            onClick={() => setShowWaypointsBox((prev) => !prev)}
+            className="absolute top-20 left-10 text-blue-500" // Positionnez l'icône à côté de la boîte
+          >
+            {showWaypointsBox ? <FaEyeSlash /> : <FaEye />}
+          </button>
         </SidebarInset>
       </SidebarProvider>
-    );
+  );
 
   };
     
