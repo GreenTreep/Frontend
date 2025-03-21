@@ -17,7 +17,11 @@ const fetchCoordinatesFromCity = async (city) => {
   try {
     const response = await fetch(url);
     const data = await response.json();
-    return data.features[0]?.center || null;
+    const coords = data.features[0]?.center || null;
+    if (coords && Array.isArray(coords) && coords.length === 2) {
+      return coords; // Assurez-vous que les coordonnées sont au format [lng, lat]
+    }
+    return null;
   } catch (error) {
     console.error(`Erreur lors de la récupération des coordonnées pour ${city}:`, error);
     return null;
@@ -64,10 +68,14 @@ export default function Page() {
 
   // Ajoutez un autre useEffect pour mettre à jour le trajet
   useEffect(() => {
+    fetchRoute(waypoints); // Appelez fetchRoute avec les waypoints actuels
+  }, [startCoords, endCoords, waypoints, transportMode]); // Ajoutez transportMode ici
+
+  useEffect(() => {
     if (startCoords && endCoords) {
       fetchRoute(waypoints); // Appelez fetchRoute avec les waypoints actuels
     }
-  }, [startCoords, endCoords, waypoints]);
+  }, [startCoords, endCoords, waypoints, transportMode]); // Ajoutez transportMode ici
 
   const fetchSuggestions = async (query) => {
     if (query.length < 3) {
@@ -146,17 +154,25 @@ export default function Page() {
   };
 
   const fetchRoute = async (waypointsToUse) => {
-    if (!startCoords || !endCoords) return;
+    if (!startCoords || !endCoords) {
+      console.warn("Les coordonnées de départ ou d'arrivée ne sont pas définies.");
+      return; // Ne pas continuer si les coordonnées ne sont pas disponibles
+    }
 
     const waypointCoords = waypointsToUse.map((waypoint) => waypoint.coords);
     const routePath = [startCoords, ...waypointCoords, endCoords]
         .map(([lng, lat]) => `${lng},${lat}`)
         .join(";");
 
-    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${routePath}?geometries=geojson&steps=true&access_token=${mapboxgl.accessToken}`;
+    const url = `https://api.mapbox.com/directions/v5/mapbox/${transportMode}/${routePath}?geometries=geojson&steps=true&access_token=${mapboxgl.accessToken}`;
     try {
       const response = await fetch(url);
       const data = await response.json();
+
+      if (!data.routes || data.routes.length === 0) {
+        console.warn("Aucune route trouvée.");
+        return; // Ne pas continuer si aucune route n'est trouvée
+      }
 
       const route = data.routes[0]?.geometry;
       const steps = data.routes[0]?.legs[0]?.steps || [];
@@ -193,8 +209,8 @@ export default function Page() {
     if (!geometry) return;
 
     const bbox = calculateBoundingBox(geometry.coordinates);
-    const categories = ["hotel", "restaurant", "gas_station", "park"];
-    const poisByCategory = { hotel: [], restaurant: [], gas_station: [], park: [] };
+    const categories = ["hotel", "restaurant", "gas_station", "park", "parking"];
+    const poisByCategory = { hotel: [], restaurant: [], gas_station: [], park: [], parking: [] };
 
     clearMarkers(); // Nettoyer les anciens marqueurs
 
@@ -206,13 +222,13 @@ export default function Page() {
 
         if (data.features) {
           const filteredPois = filterPoisByProximity(
-              data.features.map((feature) => ({
-                name: feature.text,
-                coords: feature.geometry.coordinates,
-                category,
-              })),
-              geometry.coordinates,
-              5 // Distance maximale en kilomètres
+            data.features.map((feature) => ({
+              name: feature.text,
+              coords: feature.geometry.coordinates,
+              category,
+            })),
+            geometry.coordinates,
+            5 // Distance maximale en kilomètres
           );
           poisByCategory[category] = filteredPois;
         }
@@ -223,7 +239,6 @@ export default function Page() {
 
     setPois(poisByCategory); // Mettre à jour les POI dans le state
     addMarkers(poisByCategory); // Ajouter les nouveaux marqueurs
-    // addParcoursMarkers(); // Ajouter les marqueurs pour les parcours
   };
 
   const addParcoursMarkers = (parcoursData) => {
@@ -232,7 +247,6 @@ export default function Page() {
     const map = mapRef.current;
     const allParcours = [];
   
-    // Préparation des données pour les clusters
     parcoursData.features.forEach((parcours) => {
       const { coordinates } = parcours.geometry;
       const { name, distance } = parcours.properties;
@@ -246,10 +260,15 @@ export default function Page() {
         },
         properties: {
           name,
-          distance, // Garder la distance pour l'affichage
+          distance,
         },
       });
     });
+  
+    // Vérifiez si la source existe déjà avant de l'ajouter
+    if (map.getSource('parcours')) {
+      map.removeSource('parcours');
+    }
   
     // Ajouter une source GeoJSON pour les clusters des parcours
     map.addSource('parcours', {
@@ -395,23 +414,45 @@ export default function Page() {
       poisByCategory[category].forEach((poi) => {
         if (!poi.coords || !poi.name) return;
 
-        const marker = new mapboxgl.Marker({
-          color: category === "hotel"
-              ? "blue"
-              : category === "restaurant"
-                  ? "red"
-                  : category === "park"
-                      ? "green"
-                      : "orange",
-        })
-            .setLngLat(poi.coords)
-            .setPopup(
-                new mapboxgl.Popup().setHTML(`
+        // Définir la couleur et l'icône en fonction de la catégorie
+        let color;
+        let icon;
+        switch (category) {
+          case "hotel":
+            color = "blue";
+            icon = "<i class='fas fa-hotel'></i>"; // Utilisez une icône d'hôtel
+            break;
+          case "restaurant":
+            color = "red";
+            icon = "<i class='fas fa-utensils'></i>"; // Utilisez une icône de restaurant
+            break;
+          case "park":
+            color = "green";
+            icon = "<i class='fas fa-tree'></i>"; // Utilisez une icône de parc
+            break;
+          case "gas_station":
+            color = "orange";
+            icon = "<i class='fas fa-gas-pump'></i>"; // Utilisez une icône de station-service
+            break;
+          case "parking": // Ajoutez une condition pour les parkings
+            color = "gray"; // Couleur pour le parking
+            icon = "<strong>P</strong>"; // Utilisez un symbole "P" pour le parking
+            break;
+          default:
+            color = "gray";
+            icon = "<i class='fas fa-map-marker-alt'></i>"; // Icône par défaut
+        }
+
+        const marker = new mapboxgl.Marker({ color })
+          .setLngLat(poi.coords)
+          .setPopup(
+            new mapboxgl.Popup().setHTML(`
               <strong>${poi.name}</strong><br>
               <em>${category}</em>
+              <div>${icon}</div>
             `)
-            )
-            .addTo(map);
+          )
+          .addTo(map);
 
         markersRef.current.push(marker);
       });
@@ -448,6 +489,22 @@ export default function Page() {
   
     fetchRoute();
   }, [startCoords, endCoords, transportMode]);
+
+  useEffect(() => {
+    if (mapRef.current && startCoords && endCoords) {
+      // Marqueur pour le point de départ
+      new mapboxgl.Marker({ color: "blue" })
+        .setLngLat(startCoords)
+        .setPopup(new mapboxgl.Popup().setHTML("<strong>Point de départ</strong>"))
+        .addTo(mapRef.current);
+
+      // Marqueur pour le point d'arrivée
+      new mapboxgl.Marker({ color: "green" })
+        .setLngLat(endCoords)
+        .setPopup(new mapboxgl.Popup().setHTML("<strong>Point d'arrivée</strong>"))
+        .addTo(mapRef.current);
+    }
+  }, [startCoords, endCoords]);
 
   return (
       <SidebarProvider>
