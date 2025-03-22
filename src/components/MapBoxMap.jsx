@@ -358,6 +358,9 @@ export default function Page() {
       return; // Ne pas continuer si places n'est pas un tableau
     }
 
+    // Supprimer les anciens marqueurs avant d'ajouter de nouveaux
+    clearMarkers();
+
     places.forEach((place) => {
       const marker = new mapboxgl.Marker({ color: "blue" }) // Couleur pour les établissements
         .setLngLat(place.coords)
