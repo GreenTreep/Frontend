@@ -24,11 +24,12 @@ import { NavSettings } from "@/components/sidebar/NavSettings";
 import { FaSave } from "react-icons/fa";
 import mapboxgl from "mapbox-gl";
 
-export function NavMain({ items, setStartCoords, routeDuration, setEndCoords, setTransportMode, routeInstructions, transportMode, onSaveRoute, setWaypoints, addWaypointMarker }) {
+export function NavMain({ items, setStartCoords, routeDuration, setEndCoords, setTransportMode, routeInstructions, transportMode, onSaveRoute, setWaypoints, addWaypointMarker, pois, places = [], startCoords, endCoords, waypoints }) {
   const { state } = useSidebar(); // "expanded" ou "collapsed"
 
+  console.log("Données reçues dans NavMain :", { startCoords, endCoords, waypoints, transportMode, routeInstructions }); // Pour déboguer
+
   const handleSaveRoute = async () => {
-    // Préparez les données à envoyer à l'API
     const routeData = {
       startCoords,
       endCoords,
@@ -38,7 +39,7 @@ export function NavMain({ items, setStartCoords, routeDuration, setEndCoords, se
     };
 
     try {
-      const response = await fetch('/api/save-route', { // Remplacez par l'URL de votre API
+      const response = await fetch('/api/save-route', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,6 +117,23 @@ export function NavMain({ items, setStartCoords, routeDuration, setEndCoords, se
           <FaSave className="mr-2" /> Enregistrer le trajet
         </button>
       </SidebarMenu>
+
+      {/* Afficher la liste des établissements */}
+      <div className="mt-4">
+        <h4 className="font-semibold">Établissements à proximité :</h4>
+        <ul className="mt-2">
+          {places.length > 0 ? (
+            places.map((place, index) => (
+              <li key={index} className="p-2 bg-gray-200 rounded mb-2">
+                <strong>{place.name}</strong>
+                <p>{place.description}</p>
+              </li>
+            ))
+          ) : (
+            <li className="p-2 bg-gray-200 rounded mb-2">Aucun établissement trouvé.</li>
+          )}
+        </ul>
+      </div>
     </SidebarGroup>
   );
 }

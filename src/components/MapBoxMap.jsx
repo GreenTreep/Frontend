@@ -34,12 +34,12 @@ export default function Page() {
   const [waypoints, setWaypoints] = useState([]); // Déclaration de setWaypoints
   const [transportMode, setTransportMode] = useState("driving");
   const [routeInstructions, setRouteInstructions] = useState([]);
-  const [pois, setPois] = useState({ hotel: [], restaurant: [], gas_station: [], park: [] });
   const [parcoursData, setParcoursData] = useState(null); // État pour les données GeoJSON
   const [query, setQuery] = useState(""); // État pour le champ de saisie
   const [suggestions, setSuggestions] = useState([]); // État pour les suggestions
   const [showWaypoints, setShowWaypoints] = useState(true); // État pour contrôler la visibilité des villes de passage
   const [showWaypointsBox, setShowWaypointsBox] = useState(true); // État pour contrôler la visibilité de la boîte des villes de passage
+  const [places, setPlaces] = useState([]); // Initialisez places avec un tableau vide
 
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -164,6 +164,8 @@ export default function Page() {
         .map(([lng, lat]) => `${lng},${lat}`)
         .join(";");
 
+    console.log("Coordonnées du trajet :", routePath); // Ajoutez cette ligne pour déboguer
+
     const url = `https://api.mapbox.com/directions/v5/mapbox/${transportMode}/${routePath}?geometries=geojson&steps=true&access_token=${mapboxgl.accessToken}`;
     try {
       const response = await fetch(url);
@@ -198,47 +200,22 @@ export default function Page() {
             }))
         );
 
-        fetchPois(route); // Rechercher les POI
+        // Récupérer les hôtels à proximité du trajet
+        const hotels = await fetchNearbyHotels(waypointCoords);
+        addHotelMarkers(hotels); // Ajouter les marqueurs pour les hôtels
+
+        // Récupérer les établissements dans la ville d'arrivée
+        const arrivalPlaces = await fetchPlacesInCities([endCity]);
+        addHotelMarkers(arrivalPlaces); // Ajouter les marqueurs pour les établissements dans la ville d'arrivée
+
+        // Récupérer les établissements proches du trajet
+        const routeCoords = await getRouteCoordinates(startCoords, endCoords, waypointsToUse);
+        const nearbyPlaces = await fetchNearbyPlaces(routeCoords);
+        addHotelMarkers(nearbyPlaces); // Ajouter les marqueurs pour les établissements proches
       }
     } catch (error) {
       console.error("Erreur lors de la récupération de l'itinéraire :", error);
     }
-  };
-
-  const fetchPois = async (geometry) => {
-    if (!geometry) return;
-
-    const bbox = calculateBoundingBox(geometry.coordinates);
-    const categories = ["hotel", "restaurant", "gas_station", "park", "parking"];
-    const poisByCategory = { hotel: [], restaurant: [], gas_station: [], park: [], parking: [] };
-
-    clearMarkers(); // Nettoyer les anciens marqueurs
-
-    for (const category of categories) {
-      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${category}.json?bbox=${bbox.join(",")}&access_token=${mapboxgl.accessToken}`;
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.features) {
-          const filteredPois = filterPoisByProximity(
-            data.features.map((feature) => ({
-              name: feature.text,
-              coords: feature.geometry.coordinates,
-              category,
-            })),
-            geometry.coordinates,
-            5 // Distance maximale en kilomètres
-          );
-          poisByCategory[category] = filteredPois;
-        }
-      } catch (error) {
-        console.error(`Erreur lors de la récupération des POI pour ${category}:`, error);
-      }
-    }
-
-    setPois(poisByCategory); // Mettre à jour les POI dans le state
-    addMarkers(poisByCategory); // Ajouter les nouveaux marqueurs
   };
 
   const addParcoursMarkers = (parcoursData) => {
@@ -329,77 +306,6 @@ export default function Page() {
         'circle-radius': 15,
       },
     });
-  
-    // Événement de clic sur le cluster pour zoomer
-    map.on('click', 'parcours-cluster-count', (e) => {
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: ['parcours-cluster-count'],
-      });
-      const clusterId = features[0].properties.cluster_id;
-      map.getSource('parcours').getClusterExpansionZoom(clusterId, (err, zoom) => {
-        if (err) return;
-  
-        map.easeTo({
-          center: features[0].geometry.coordinates,
-          zoom: zoom,
-        });
-      });
-    });
-  
-    // Événement de clic sur les points individuels pour afficher un popup avec des détails
-    map.on('click', 'parcours-individual-points', (e) => {
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const name = e.features[0].properties.name;
-      const distance = e.features[0].properties.distance;
-  
-      // Conversion de la distance en kilomètres pour l'afficher dans le popup
-      const distanceInKm = (distance / 1000).toFixed(3);
-  
-      new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(`
-          <strong>${name}</strong><br>
-          <em>Distance: ${distanceInKm} km</em>
-        `)
-        .addTo(map);
-    });
-  };
-
-  const filterPoisByProximity = (pois, routeCoordinates, maxDistance) => {
-    return pois.filter((poi) => {
-      return routeCoordinates.some((coordinate) => {
-        const distance = calculateDistance(coordinate, poi.coords);
-        return distance <= maxDistance;
-      });
-    });
-  };
-
-  const calculateDistance = ([lng1, lat1], [lng2, lat2]) => {
-    const toRad = (deg) => (deg * Math.PI) / 180;
-    const R = 6371; // Rayon de la Terre en km
-    const dLat = toRad(lat2 - lat1);
-    const dLng = toRad(lng2 - lng1);
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  const calculateBoundingBox = (coordinates) => {
-    let minLng = Infinity,
-        minLat = Infinity,
-        maxLng = -Infinity,
-        maxLat = -Infinity;
-
-    coordinates.forEach(([lng, lat]) => {
-      if (lng < minLng) minLng = lng;
-      if (lat < minLat) minLat = lat;
-      if (lng > maxLng) maxLng = lng;
-      if (lat > maxLat) maxLat = lat;
-    });
-
-    return [minLng, minLat, maxLng, maxLat];
   };
 
   const clearMarkers = () => {
@@ -407,104 +313,128 @@ export default function Page() {
     markersRef.current = [];
   };
 
-  const addMarkers = (poisByCategory) => {
+  const fetchNearbyHotels = async (routeCoordinates) => {
+    if (!routeCoordinates || routeCoordinates.length === 0) return [];
+
+    const hotels = [];
+    
+    // Parcourez chaque segment de l'itinéraire
+    for (let i = 0; i < routeCoordinates.length - 1; i++) {
+      const [start, end] = [routeCoordinates[i], routeCoordinates[i + 1]];
+      const midLng = (start[0] + end[0]) / 2;
+      const midLat = (start[1] + end[1]) / 2;
+
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/hotel.json?proximity=${midLng},${midLat}&access_token=${mapboxgl.accessToken}`;
+
+      console.log("URL Mapbox :", url); // Ajoutez cette ligne pour déboguer
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.features) {
+          const segmentHotels = data.features.map((feature) => ({
+            name: feature.text || "Hôtel sans nom",
+            coords: feature.geometry.coordinates,
+          }));
+          hotels.push(...segmentHotels); // Ajouter les hôtels récupérés à la liste
+    } else {
+          console.warn("Aucun hôtel trouvé à proximité.");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des hôtels :", error);
+      }
+    }
+
+    console.log("Hôtels récupérés le long du trajet :", hotels); // Affichez la liste des hôtels récupérés
+    return hotels; // Retourner la liste des hôtels
+  };
+
+  const addHotelMarkers = (places) => {
     const map = mapRef.current;
 
-    Object.keys(poisByCategory).forEach((category) => {
-      poisByCategory[category].forEach((poi) => {
-        if (!poi.coords || !poi.name) return;
+    if (!Array.isArray(places)) {
+      console.warn("Les établissements doivent être un tableau.");
+      return; // Ne pas continuer si places n'est pas un tableau
+    }
 
-        // Définir la couleur et l'icône en fonction de la catégorie
-        let color;
-        let icon;
-        switch (category) {
-          case "hotel":
-            color = "blue";
-            icon = "<i class='fas fa-hotel'></i>"; // Utilisez une icône d'hôtel
-            break;
-          case "restaurant":
-            color = "red";
-            icon = "<i class='fas fa-utensils'></i>"; // Utilisez une icône de restaurant
-            break;
-          case "park":
-            color = "green";
-            icon = "<i class='fas fa-tree'></i>"; // Utilisez une icône de parc
-            break;
-          case "gas_station":
-            color = "orange";
-            icon = "<i class='fas fa-gas-pump'></i>"; // Utilisez une icône de station-service
-            break;
-          case "parking": // Ajoutez une condition pour les parkings
-            color = "gray"; // Couleur pour le parking
-            icon = "<strong>P</strong>"; // Utilisez un symbole "P" pour le parking
-            break;
-          default:
-            color = "gray";
-            icon = "<i class='fas fa-map-marker-alt'></i>"; // Icône par défaut
-        }
+    places.forEach((place) => {
+      const marker = new mapboxgl.Marker({ color: "blue" }) // Couleur pour les établissements
+        .setLngLat(place.coords)
+        .setPopup(new mapboxgl.Popup().setHTML(`<strong>${place.name}</strong>`))
+        .addTo(map);
 
-        const marker = new mapboxgl.Marker({ color })
-          .setLngLat(poi.coords)
-          .setPopup(
-            new mapboxgl.Popup().setHTML(`
-              <strong>${poi.name}</strong><br>
-              <em>${category}</em>
-              <div>${icon}</div>
-            `)
-          )
-          .addTo(map);
-
-        markersRef.current.push(marker);
-      });
+      markersRef.current.push(marker); // Ajouter le marqueur à la référence
     });
   };
 
-  const addWaypointMarker = (suggestion) => {
-    if (suggestion) {
-      // Ajoutez la ville à la liste des waypoints
-      setWaypoints((prevWaypoints) => [
-        ...prevWaypoints,
-        { name: suggestion.name, coords: suggestion.coords },
-      ]);
-      
-      // Appeler la fonction pour ajouter le marqueur sur la carte
-      const marker = new mapboxgl.Marker({ color: "yellow" }) // Marqueur jaune
-        .setLngLat(suggestion.coords)
-        .setPopup(new mapboxgl.Popup().setHTML(`<strong>${suggestion.name}</strong>`))
-        .addTo(mapRef.current);
-      
-      markersRef.current.push(marker); // Ajouter le marqueur à la référence
+  const fetchPlacesInCities = async (cities) => {
+    const allPlaces = [];
+
+    for (const city of cities) {
+      const coords = await fetchCoordinatesFromCity(city);
+      if (!coords) continue; // Passer à la prochaine ville si les coordonnées ne sont pas disponibles
+
+      const [lng, lat] = coords;
+      const url = `https://api.mapbox.com/search/searchbox/v1/forward?q=${encodeURIComponent("restaurant")}&proximity=${lng},${lat}&access_token=${mapboxgl.accessToken}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.features) {
+          const places = data.features.map((feature) => ({
+            name: feature.properties.name || "Établissement sans nom",
+            coords: feature.geometry.coordinates,
+            description: feature.properties.description || "Aucune description disponible",
+            image: feature.properties.image || "URL_de_l_image_par_défaut.jpg",
+          }));
+          allPlaces.push(...places); // Ajouter les établissements récupérés à la liste
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des établissements :", error);
+      }
     }
+
+    return allPlaces; // Retourner la liste de tous les établissements
+  };
+
+  const fetchNearbyPlaces = async (routeCoords) => {
+    const places = [];
+    for (const coord of routeCoords) {
+      const [lng, lat] = coord; // Décomposer les coordonnées
+      const url = `https://api.mapbox.com/search/searchbox/v1/forward?q=${encodeURIComponent("restaurant")}&proximity=${lng},${lat}&access_token=${mapboxgl.accessToken}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.features) {
+          const nearbyPlaces = data.features.map((feature) => ({
+            name: feature.properties.name || "Établissement sans nom",
+            coords: feature.geometry.coordinates,
+            description: feature.properties.description || "Aucune description disponible",
+            image: feature.properties.image || "URL_de_l_image_par_défaut.jpg",
+          }));
+          places.push(...nearbyPlaces); // Ajouter les établissements à la liste
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des établissements :", error);
+      }
+    }
+    return places; // Retourner la liste des établissements
   };
 
   useEffect(() => {
-    // Charger le fichier GeoJSON
-    fetch("/data_extraction/marqueurs3.geojson")
-      .then((response) => response.json())
-      .then((data) => {
-        setParcoursData(data);
-        addParcoursMarkers(data); // Appeler la fonction pour ajouter les marqueurs
-      })
-      .catch((error) => console.error("Erreur lors de la récupération des données GeoJSON:", error));
-  
-    fetchRoute();
-  }, [startCoords, endCoords, transportMode]);
+    const fetchPlaces = async () => {
+      const cities = [endCity, ...waypoints.map(waypoint => waypoint.name)]; // Inclure la ville d'arrivée et les villes de passage
+      const placesInCities = await fetchPlacesInCities(cities);
+      setPlaces(placesInCities); // Mettez à jour l'état avec les établissements récupérés
+      addHotelMarkers(placesInCities); // Ajouter les marqueurs pour les établissements récupérés
+    };
 
-  useEffect(() => {
-    if (mapRef.current && startCoords && endCoords) {
-      // Marqueur pour le point de départ
-      new mapboxgl.Marker({ color: "blue" })
-        .setLngLat(startCoords)
-        .setPopup(new mapboxgl.Popup().setHTML("<strong>Point de départ</strong>"))
-        .addTo(mapRef.current);
-
-      // Marqueur pour le point d'arrivée
-      new mapboxgl.Marker({ color: "green" })
-        .setLngLat(endCoords)
-        .setPopup(new mapboxgl.Popup().setHTML("<strong>Point d'arrivée</strong>"))
-        .addTo(mapRef.current);
-    }
-  }, [startCoords, endCoords]);
+    fetchPlaces();
+  }, [endCoords, waypoints]); // Déclencher cet effet lorsque endCoords ou waypoints changent
 
   return (
       <SidebarProvider>
@@ -516,7 +446,9 @@ export default function Page() {
             setTransportMode={setTransportMode}
             transportMode={transportMode}
             routeInstructions={routeInstructions}
-          pois={pois} // Ajout des POI dans la sidebar
+            places={places}
+            startCoords={startCoords}
+            endCoords={endCoords}
         />
 
         <SidebarInset>
@@ -540,23 +472,23 @@ export default function Page() {
           <div className="absolute top-20 left-2 bg-white p-4 rounded shadow w-80">
             <h4 className="font-semibold">Ajouter une ville (point de passage)</h4>
             <div className="flex items-center mb-2">
-              <input
+            <input
                 type="text"
                 placeholder="Ajouter une ville (point de passage)"
                 className="p-2 border border-gray-300 rounded w-full"
                 value={query}
                 onChange={handleQueryChange}
-              />
+            />
             </div>
             <ul className="mt-2 bg-gray-100 rounded shadow">
               {suggestions.map((suggestion, index) => (
-                <li
-                  key={index}
-                  className="p-2 cursor-pointer hover:bg-blue-100"
-                  onClick={() => addWaypoint(suggestion)}
-                >
-                  {suggestion.name}
-                </li>
+                  <li
+                      key={index}
+                      className="p-2 cursor-pointer hover:bg-blue-100"
+                      onClick={() => addWaypoint(suggestion)}
+                  >
+                    {suggestion.name}
+                  </li>
               ))}
             </ul>
 
@@ -566,14 +498,14 @@ export default function Page() {
               <ul className="mt-2">
                 {waypoints.map((waypoint, index) => (
                   <li key={index} className="flex items-center justify-between p-2 bg-gray-200 rounded mb-2">
-                    <span>{waypoint.name}</span>
-                    <button
-                      onClick={() => removeWaypoint(index)}
-                      className="text-red-500 hover:underline"
-                    >
+                      <span>{waypoint.name}</span>
+                      <button
+                          onClick={() => removeWaypoint(index)}
+                          className="text-red-500 hover:underline"
+                      >
                       <FaTrash />
-                    </button>
-                  </li>
+                      </button>
+                    </li>
                 ))}
               </ul>
             </div>
@@ -583,13 +515,12 @@ export default function Page() {
           {/* Icône d'œil fixe pour cacher ou afficher la boîte d'ajout de ville de passage */}
           <button
             onClick={() => setShowWaypointsBox((prev) => !prev)}
-            className="absolute top-20 left-10 text-blue-500" // Positionnez l'icône à côté de la boîte
+            className="absolute top-20 left-10 text-blue-500"
           >
             {showWaypointsBox ? <FaEyeSlash /> : <FaEye />}
           </button>
         </SidebarInset>
       </SidebarProvider>
   );
-
-  };
+}
     
