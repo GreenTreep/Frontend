@@ -9,6 +9,7 @@ import { useTheme } from "@/hooks/theme-provider";
 import { useLocation } from "react-router-dom";
 import { NavMain } from "@/components/sidebar/nav-main";
 import { FaTrash, FaEye, FaEyeSlash } from "react-icons/fa";
+import HotelsList from './sidebar/HotelsList';
 
 mapboxgl.accessToken = "pk.eyJ1Ijoic3lsdmFpbmNvc3RlcyIsImEiOiJjbTNxZXNtN3cwa2hpMmpxdWd2cndhdnYwIn0.V2ZAp-BqZq6KIHQ6Lu8eAQ";
 
@@ -40,6 +41,8 @@ export default function Page() {
   const [showWaypoints, setShowWaypoints] = useState(true); // État pour contrôler la visibilité des villes de passage
   const [showWaypointsBox, setShowWaypointsBox] = useState(true); // État pour contrôler la visibilité de la boîte des villes de passage
   const [places, setPlaces] = useState([]); // Initialisez places avec un tableau vide
+  const [hotels, setHotels] = useState([]);
+  const [selectedHotel, setSelectedHotel] = useState(null);
 
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -76,6 +79,55 @@ export default function Page() {
       fetchRoute(waypoints); // Appelez fetchRoute avec les waypoints actuels
     }
   }, [startCoords, endCoords, waypoints, transportMode]); // Ajoutez transportMode ici
+
+  // Ajouter un useEffect pour mettre à jour la destination
+  useEffect(() => {
+    const updateDestination = async () => {
+      if (endCity) {
+        try {
+          const coords = await fetchCoordinatesFromCity(endCity);
+          if (coords) {
+            setEndCoords(coords);
+            // Rechercher les hôtels pour la nouvelle destination
+            const hotels = await searchHotels(endCity, new Date().toISOString().split('T')[0]);
+            setHotels(hotels);
+            // Mettre à jour le trajet avec les nouvelles coordonnées
+            fetchRoute(waypoints);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la mise à jour de la destination:", error);
+        }
+      }
+    };
+
+    updateDestination();
+  }, [endCity]); // Se déclenche quand endCity change
+
+  // Ajouter un useEffect pour mettre à jour la destination dans la navbar
+  useEffect(() => {
+    const updateNavbarDestination = async () => {
+      if (endCoords) {
+        try {
+          // Utiliser l'API de géocodage inverse pour obtenir le nom de la ville
+          const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${endCoords[0]},${endCoords[1]}.json?access_token=${mapboxgl.accessToken}&types=place`;
+          const response = await fetch(url);
+          const data = await response.json();
+          
+          if (data.features && data.features.length > 0) {
+            const cityName = data.features[0].place_name;
+            // Mettre à jour l'URL avec la nouvelle destination
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('endCity', cityName);
+            window.history.pushState({}, '', newUrl);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la mise à jour de la destination dans la navbar:", error);
+        }
+      }
+    };
+
+    updateNavbarDestination();
+  }, [endCoords]);
 
   const fetchSuggestions = async (query) => {
     if (query.length < 3) {
@@ -313,41 +365,42 @@ export default function Page() {
     markersRef.current = [];
   };
 
-  const fetchNearbyHotels = async (routeCoordinates) => {
-    if (!routeCoordinates || routeCoordinates.length === 0) return [];
+  const fetchNearbyHotels = async (coordinates) => {
+    try {
+      const hotels = [];
+      for (let i = 0; i < coordinates.length - 1; i++) {
+        const start = coordinates[i];
+        const end = coordinates[i + 1];
+        const midpoint = {
+          lng: (start[0] + end[0]) / 2,
+          lat: (start[1] + end[1]) / 2
+        };
 
-    const hotels = [];
-    
-    // Parcourez chaque segment de l'itinéraire
-    for (let i = 0; i < routeCoordinates.length - 1; i++) {
-      const [start, end] = [routeCoordinates[i], routeCoordinates[i + 1]];
-      const midLng = (start[0] + end[0]) / 2;
-      const midLat = (start[1] + end[1]) / 2;
+        const response = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/hotel.json?` +
+          `proximity=${midpoint.lng},${midpoint.lat}&` +
+          `access_token=${mapboxgl.accessToken}&` +
+          `limit=10&` +
+          `types=poi&` +
+          `language=fr`
+        );
 
-      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/hotel.json?proximity=${midLng},${midLat}&access_token=${mapboxgl.accessToken}`;
-
-      console.log("URL Mapbox :", url); // Ajoutez cette ligne pour déboguer
-
-      try {
-        const response = await fetch(url);
         const data = await response.json();
-
         if (data.features) {
-          const segmentHotels = data.features.map((feature) => ({
-            name: feature.text || "Hôtel sans nom",
-            coords: feature.geometry.coordinates,
+          const newHotels = data.features.map(feature => ({
+            name: feature.text,
+            coordinates: feature.center,
+            address: feature.place_name,
+            category: feature.properties?.category || 'Hôtel',
+            type: feature.properties?.type || 'Hébergement'
           }));
-          hotels.push(...segmentHotels); // Ajouter les hôtels récupérés à la liste
-    } else {
-          console.warn("Aucun hôtel trouvé à proximité.");
+          hotels.push(...newHotels);
         }
-      } catch (error) {
-        console.error("Erreur lors de la récupération des hôtels :", error);
       }
+      setHotels(hotels);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des hôtels:', error);
     }
-
-    console.log("Hôtels récupérés le long du trajet :", hotels); // Affichez la liste des hôtels récupérés
-    return hotels; // Retourner la liste des hôtels
   };
 
   const addHotelMarkers = (places) => {
@@ -439,6 +492,16 @@ export default function Page() {
     fetchPlaces();
   }, [endCoords, waypoints]); // Déclencher cet effet lorsque endCoords ou waypoints changent
 
+  const handleHotelClick = (hotel) => {
+    setSelectedHotel(hotel);
+    if (mapRef.current) {
+      mapRef.current.flyTo({
+        center: hotel.coordinates,
+        zoom: 15
+      });
+    }
+  };
+
   return (
       <SidebarProvider>
         <AppSidebar
@@ -452,6 +515,7 @@ export default function Page() {
             places={places}
             startCoords={startCoords}
             endCoords={endCoords}
+            endCity={endCity}
         />
 
         <SidebarInset>
@@ -523,6 +587,13 @@ export default function Page() {
             {showWaypointsBox ? <FaEyeSlash /> : <FaEye />}
           </button>
         </SidebarInset>
+
+        <div className="absolute top-4 right-4 z-10">
+          <HotelsList 
+            hotels={hotels} 
+            onHotelClick={handleHotelClick}
+          />
+        </div>
       </SidebarProvider>
   );
 }
