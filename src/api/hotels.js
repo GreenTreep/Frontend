@@ -239,4 +239,71 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 // Fonction pour convertir les degrés en radians
 function toRad(degrees) {
   return degrees * (Math.PI/180);
+}
+
+// Fonction pour filtrer les hôtels
+export function filterHotels(hotels, filters) {
+  return hotels.filter(hotel => {
+    // Filtre par prix
+    if (filters.priceRange) {
+      const [minPrice, maxPrice] = filters.priceRange;
+      if (hotel.price < minPrice || hotel.price > maxPrice) {
+        return false;
+      }
+    }
+
+    // Filtre par note
+    if (filters.rating) {
+      if (hotel.rating < filters.rating) {
+        return false;
+      }
+    }
+
+    // Filtre par équipements
+    if (filters.amenities && filters.amenities.length > 0) {
+      const hasAllAmenities = filters.amenities.every(amenity => 
+        hotel.amenities.includes(amenity)
+      );
+      if (!hasAllAmenities) {
+        return false;
+      }
+    }
+
+    // Filtre par annulation gratuite
+    if (filters.freeCancellation) {
+      const hasFreeCancellation = hotel.benefitBadges.some(badge => 
+        badge.text?.toLowerCase().includes('annulation gratuite')
+      );
+      if (!hasFreeCancellation) {
+        return false;
+      }
+    }
+
+    // Filtre par nombre d'étoiles
+    if (filters.stars) {
+      if (hotel.qualityClass < filters.stars) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
+// Fonction pour trier les hôtels
+export function sortHotels(hotels, sortBy) {
+  return [...hotels].sort((a, b) => {
+    switch (sortBy) {
+      case 'price_asc':
+        return a.price - b.price;
+      case 'price_desc':
+        return b.price - a.price;
+      case 'rating_desc':
+        return b.rating - a.rating;
+      case 'distance_asc':
+        return a.distance - b.distance;
+      default:
+        return 0;
+    }
+  });
 } 
