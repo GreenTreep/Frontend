@@ -7,6 +7,9 @@ import Test from '../pages/Test.jsx';
 import Login from '../security/Login.jsx';
 import Register from '../security/Register.jsx';
 import HelpAdmin from '../help/HelpAdmin.jsx'
+import HebergementsPage from '../pages/Hebergements.jsx';
+
+
 import EcoNews from '../pages/EcoNews.jsx';
 import CarbonCalculator from '../pages/CarbonCalculator.jsx';
 const routes = [
@@ -43,12 +46,16 @@ const routes = [
         element: <Register />,
       },
       {
-        path: '*',
-        element: <Error404 />,
+        path: '/hebergements',
+        element: <HebergementsPage />,
       },
       {
         path: '/help-admin',
         element: <HelpAdmin />,
+      },
+      {
+        path: '*',
+        element: <Error404 />,
       }
     ],
   },

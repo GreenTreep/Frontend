@@ -87,7 +87,20 @@ const data = {
   ],
 };
 
-export const AppSidebar = ({ setStartCoords, routeDuration, setEndCoords, setTransportMode, routeInstructions, transportMode }) => {
+export const AppSidebar = ({ 
+  setStartCoords, 
+  routeDuration, 
+  setEndCoords, 
+  setTransportMode, 
+  routeInstructions, 
+  transportMode,
+  waypoints,
+  setWaypoints,
+  places,
+  startCoords,
+  endCoords,
+  endCity
+}) => {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -101,7 +114,13 @@ export const AppSidebar = ({ setStartCoords, routeDuration, setEndCoords, setTra
           setTransportMode={setTransportMode}
           routeInstructions={routeInstructions}
           transportMode={transportMode}
-          routeDuration={routeDuration} 
+          routeDuration={routeDuration}
+          waypoints={waypoints}
+          setWaypoints={setWaypoints}
+          places={places}
+          startCoords={startCoords}
+          endCoords={endCoords}
+          endCity={endCity}
         />
       </SidebarContent>
       <SidebarFooter>
