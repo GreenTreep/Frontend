@@ -1,4 +1,4 @@
-const RAPIDAPI_KEY = '729e950535msh1f2029a074e835dp10a6ccjsn4d6e42c5e1c9';
+const RAPIDAPI_KEY = 'c80ac75efamsh18e48fcabfa7ed6p1bf924jsn8c106b0c0e55';
 const RAPIDAPI_HOST = 'booking-com15.p.rapidapi.com';
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoic3lsdmFpbmNvc3RlcyIsImEiOiJjbTNxZXNtN3cwa2hpMmpxdWd2cndhdnYwIn0.V2ZAp-BqZq6KIHQ6Lu8eAQ';
 
@@ -27,6 +27,44 @@ function generateMockHotels(city) {
       amenities: randomAmenities,
       image: `https://source.unsplash.com/800x600/?hotel,${city}`,
       description: `Un hôtel confortable situé au cœur de ${city}, offrant une vue imprenable et un service exceptionnel.`,
+    });
+  }
+
+  return hotels;
+}
+
+// Fonction pour générer des données de démonstration
+function generateDemoHotels(city) {
+  const amenities = ['WiFi', 'Piscine', 'Parking', 'Restaurant', 'Spa', 'Gym', 'Bar'];
+  const hotels = [];
+
+  for (let i = 1; i <= 10; i++) {
+    const rating = Math.floor(Math.random() * 3) + 3; // Note entre 3 et 5
+    const price = Math.floor(Math.random() * 200) + 50; // Prix entre 50€ et 250€
+    const randomAmenities = amenities
+      .sort(() => Math.random() - 0.5)
+      .slice(0, Math.floor(Math.random() * 4) + 2);
+
+    hotels.push({
+      id: `hotel-${city}-${i}`,
+      name: `${city} Hotel ${i}`,
+      address: `${Math.floor(Math.random() * 100) + 1} Avenue de ${city}`,
+      price: price,
+      rating: rating,
+      amenities: randomAmenities,
+      image: `https://source.unsplash.com/800x600/?hotel,${city}`,
+      description: `Un hôtel confortable situé au cœur de ${city}, offrant une vue imprenable et un service exceptionnel.`,
+      distance: Math.floor(Math.random() * 5) + 1,
+      coordinates: [0, 0], // Coordonnées fictives
+      checkIn: "14:00",
+      checkOut: "12:00",
+      reviewCount: Math.floor(Math.random() * 1000) + 100,
+      reviewScoreWord: "Excellent",
+      qualityClass: Math.floor(Math.random() * 3) + 3,
+      currency: "EUR",
+      originalPrice: price + 20,
+      currentPrice: price,
+      benefitBadges: ["Petit-déjeuner inclus", "Annulation gratuite"]
     });
   }
 
@@ -150,20 +188,21 @@ export async function searchHotels(city, date) {
     // Transformer les données pour correspondre à notre format
     const hotels = responseData.data.hotels.map(hotel => {
       const property = hotel.property;
-      // Extraire l'adresse de l'accessibilityLabel
-      const addressMatch = hotel.accessibilityLabel.match(/À ([\d,.]+ km) du centre/);
-      const distance = addressMatch ? addressMatch[1] : 'Distance non disponible';
-      
+      // Améliorer la qualité de l'image en modifiant l'URL
+      const imageUrl = property.photoUrls?.[0]
+        ? property.photoUrls[0].replace('/square60/', '/max1024x768/')
+        : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1080&q=80';
+
       return {
         id: property.id || `hotel-${Math.random()}`,
         name: property.name || 'Hôtel sans nom',
-        address: `${property.name}, ${distance} du centre de ${cityName}`,
+        address: property.address || 'Adresse non disponible',
         price: property.priceBreakdown?.grossPrice?.value || 0,
         rating: property.reviewScore || 0,
         amenities: property.amenities || [],
-        image: property.photoUrls?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1080&q=80',
+        image: imageUrl,
         description: hotel.accessibilityLabel || 'Aucune description disponible',
-        distance: distance,
+        distance: property.distance || 0,
         coordinates: [property.longitude, property.latitude],
         checkIn: property.checkin,
         checkOut: property.checkout,
@@ -182,4 +221,22 @@ export async function searchHotels(city, date) {
     console.error('Erreur lors de la recherche d\'hébergements:', error);
     throw error;
   }
+}
+
+// Fonction pour calculer la distance entre deux points en kilomètres
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Rayon de la Terre en km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
+// Fonction pour convertir les degrés en radians
+function toRad(degrees) {
+  return degrees * (Math.PI/180);
 } 

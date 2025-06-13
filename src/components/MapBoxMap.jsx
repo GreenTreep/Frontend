@@ -80,55 +80,6 @@ export default function Page() {
     }
   }, [startCoords, endCoords, waypoints, transportMode]); // Ajoutez transportMode ici
 
-  // Ajouter un useEffect pour mettre à jour la destination
-  useEffect(() => {
-    const updateDestination = async () => {
-      if (endCity) {
-        try {
-          const coords = await fetchCoordinatesFromCity(endCity);
-          if (coords) {
-            setEndCoords(coords);
-            // Rechercher les hôtels pour la nouvelle destination
-            const hotels = await searchHotels(endCity, new Date().toISOString().split('T')[0]);
-            setHotels(hotels);
-            // Mettre à jour le trajet avec les nouvelles coordonnées
-            fetchRoute(waypoints);
-          }
-        } catch (error) {
-          console.error("Erreur lors de la mise à jour de la destination:", error);
-        }
-      }
-    };
-
-    updateDestination();
-  }, [endCity]); // Se déclenche quand endCity change
-
-  // Ajouter un useEffect pour mettre à jour la destination dans la navbar
-  useEffect(() => {
-    const updateNavbarDestination = async () => {
-      if (endCoords) {
-        try {
-          // Utiliser l'API de géocodage inverse pour obtenir le nom de la ville
-          const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${endCoords[0]},${endCoords[1]}.json?access_token=${mapboxgl.accessToken}&types=place`;
-          const response = await fetch(url);
-          const data = await response.json();
-          
-          if (data.features && data.features.length > 0) {
-            const cityName = data.features[0].place_name;
-            // Mettre à jour l'URL avec la nouvelle destination
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.set('endCity', cityName);
-            window.history.pushState({}, '', newUrl);
-          }
-        } catch (error) {
-          console.error("Erreur lors de la mise à jour de la destination dans la navbar:", error);
-        }
-      }
-    };
-
-    updateNavbarDestination();
-  }, [endCoords]);
-
   const fetchSuggestions = async (query) => {
     if (query.length < 3) {
       setSuggestions([]); // Ne pas afficher de suggestions si la requête est trop courte
