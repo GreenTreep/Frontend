@@ -9,6 +9,9 @@ import Register from '../security/Register.jsx';
 import HelpAdmin from '../help/HelpAdmin.jsx'
 import HebergementsPage from '../pages/Hebergements.jsx';
 
+
+import EcoNews from '../pages/EcoNews.jsx';
+import CarbonCalculator from '../pages/CarbonCalculator.jsx';
 const routes = [
   {
     path: '/',
@@ -25,6 +28,14 @@ const routes = [
       {
         path: '/mapbox',
         element: <MapPage />,
+      },
+      {
+        path: '/eco-news',
+        element: <EcoNews />,
+      },
+      {
+        path: '/carbon-footprint',
+        element: <CarbonCalculator />,
       },
       {
         path: '/login',
