@@ -1,19 +1,17 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/security/auth/AuthContext';
-import { ModeToggle } from '../../hooks/mode-toggle.jsx';
 import { Button } from '@/components/ui/button';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import Helper from '@/help/Helper.jsx';
+import { useAuth } from '@/security/auth/AuthContext';
 import { CircleUserRound } from 'lucide-react';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { ModeToggle } from '../../hooks/mode-toggle.jsx';
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -51,10 +49,13 @@ const Header = () => {
             GreenTrip
           </p>
         </Link>
-        
+
         <div>{renderUserOptions()}</div>
-        
+
         <div className="flex items-center space-x-2">
+          <Link to="/eco-news" className="px-2">
+            <Button className="px-7 py-2">Eco News</Button>
+          </Link>
           {user ? (
             <DropdownMenu className="mt-10" modal={false}>
               <DropdownMenuTrigger className="flex items-center ">
@@ -71,7 +72,7 @@ const Header = () => {
           ) : (!isHelpAdminPage &&
             <Link to="/login" className="px-2">
               <Button className="px-7 py-2">Login</Button>
-            </Link> 
+            </Link>
           )}
           <ModeToggle />
         </div>

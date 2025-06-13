@@ -7,7 +7,7 @@ import Test from '../pages/Test.jsx';
 import Login from '../security/Login.jsx';
 import Register from '../security/Register.jsx';
 import HelpAdmin from '../help/HelpAdmin.jsx'
-
+import EcoNews from '../pages/EcoNews.jsx';
 const routes = [
   {
     path: '/',
@@ -24,6 +24,10 @@ const routes = [
       {
         path: '/mapbox',
         element: <MapPage />,
+      },
+      {
+        path: '/eco-news',
+        element: <EcoNews />,
       },
       {
         path: '/login',
