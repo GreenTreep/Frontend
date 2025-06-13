@@ -306,4 +306,70 @@ export function sortHotels(hotels, sortBy) {
         return 0;
     }
   });
+}
+
+// Fonction pour obtenir les disponibilités d'un hôtel
+export async function getHotelAvailability(hotelId) {
+  try {
+    // Données de démonstration
+    const mockAvailability = {
+      rooms: [
+        {
+          name: "Chambre Standard",
+          price: 120,
+          description: "Chambre confortable avec lit double",
+          amenities: ["WiFi gratuit", "TV", "Climatisation", "Salle de bain privée"]
+        },
+        {
+          name: "Suite Deluxe",
+          price: 200,
+          description: "Suite spacieuse avec vue panoramique",
+          amenities: ["WiFi gratuit", "TV 55\"", "Mini-bar", "Bain à remous", "Vue panoramique"]
+        },
+        {
+          name: "Chambre Familiale",
+          price: 180,
+          description: "Chambre familiale avec deux lits doubles",
+          amenities: ["WiFi gratuit", "TV", "Climatisation", "Salle de bain privée", "Espace de travail"]
+        }
+      ]
+    };
+
+    // Simuler un délai réseau
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return mockAvailability;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des disponibilités:', error);
+    throw error;
+  }
+}
+
+// Fonction pour obtenir les options de paiement d'un hôtel
+export async function getHotelPaymentFeatures(hotelId) {
+  try {
+    // Données de démonstration
+    const mockPaymentFeatures = {
+      paymentMethods: [
+        {
+          name: "Carte de crédit",
+          description: "Visa, Mastercard, American Express"
+        },
+        {
+          name: "PayPal",
+          description: "Paiement sécurisé via PayPal"
+        },
+        {
+          name: "Virement bancaire",
+          description: "Paiement par virement bancaire (48h)"
+        }
+      ]
+    };
+
+    // Simuler un délai réseau
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return mockPaymentFeatures;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des options de paiement:', error);
+    throw error;
+  }
 } 
