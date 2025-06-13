@@ -10,15 +10,18 @@ const BaseLayout = () => {
   const isRegisterPage = location.pathname === '/register';
   const isMapBoxPage = location.pathname === '/mapbox';
   const isHelpAdminPage = location.pathname === '/help-admin';
+  const isShop = location.pathname === '/shop';
+  const isCheckout = location.pathname === '/checkout';
+  const isOrders = location.pathname === '/orders';
 
   return (
     <div className="min-h-screen relative">
-      {!isMapBoxPage && !isHelpAdminPage &&  <Background />}
+      {!isMapBoxPage && !isHelpAdminPage && !isShop && ! isCheckout && !isOrders && <Background />}
       {!isRegisterPage && !isLoginPage && !isMapBoxPage && <Header />} {/* Affiche le Header sauf sur /login et /register */}
       <main className="relative z-10"> {/* Ajustez pt-20 selon la hauteur de votre Header */}
         <Outlet />
       </main>
-      {!isRegisterPage && !isLoginPage && !isMapBoxPage && !isHelpAdminPage && <Footer />}
+      {!isRegisterPage && !isLoginPage && !isMapBoxPage && !isHelpAdminPage && !isShop && ! isCheckout && !isOrders && <Footer />}
     </div>
   );
 };

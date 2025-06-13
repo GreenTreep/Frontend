@@ -1,5 +1,7 @@
 // NavUser.jsx
 "use client";
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 import {
   BadgeCheck,
@@ -132,6 +134,11 @@ export function NavUser() {
         </SidebarMenuItem>
       </SidebarMenu>
 
+      <Link to='/shop' >
+        <Button className='w-full py-2'>
+          Shop
+        </Button>
+      </Link>
       {/* Helper Dialog */}
       <Helper isOpen={isHelperOpen} onClose={() => setIsHelperOpen(false)} />
     </>

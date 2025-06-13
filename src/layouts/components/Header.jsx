@@ -12,13 +12,15 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import Helper from '@/help/Helper.jsx';
-import { CircleUserRound } from 'lucide-react';
+import { CircleUserRound, ShoppingCart } from 'lucide-react';4
+import CartMenu from '@/components/shop/CartMenu'
 
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const isHelpAdminPage = location.pathname === '/help-admin';
-
+  const isShop = location.pathname === '/shop';
+  const isHomePage = location.pathname === '/';
 
   const handleLogout = () => {
     try {
@@ -37,7 +39,7 @@ const Header = () => {
         </Link>
       );
     }
-    if (user?.role === 'USER') {
+    if (user?.role === 'USER' && isHomePage) {
       return <Helper />;
     }
     return null;
@@ -53,9 +55,32 @@ const Header = () => {
         </Link>
         
         <div>{renderUserOptions()}</div>
+
+        {!isShop && <div>
+            <Link to="/shop" className="px-2">
+              <Button className='px-7 py-2'>Shop</Button>
+            </Link>
+          </div>}
         
         <div className="flex items-center space-x-2">
           {user ? (
+            <>
+            {isShop && (
+              <>
+              <Link to="/orders" className="px-2">
+              <Button>
+                Mes Commandes
+              </Button>
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon">
+                    <ShoppingCart />
+                  </Button>
+                </DropdownMenuTrigger>
+                <CartMenu />
+              </DropdownMenu></>
+            )}
             <DropdownMenu className="mt-10" modal={false}>
               <DropdownMenuTrigger className="flex items-center ">
                 <Button size="icon">
@@ -68,6 +93,7 @@ const Header = () => {
                 <DropdownMenuItem onClick={handleLogout}>Déconnexion</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            </>
           ) : (!isHelpAdminPage &&
             <Link to="/login" className="px-2">
               <Button className="px-7 py-2">Login</Button>
