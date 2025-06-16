@@ -36,7 +36,7 @@ const Chatbot = () => {
 
     setTimeout(() => {
       setMessages((prev) => [...prev, { sender: "bot", text: botReply }]);
-    }, 600); // petite latence pour faire plus naturel
+    }, 600); 
   };
 
   const handleKeyDown = (e) => {
