@@ -9,6 +9,9 @@ import Register from '../security/Register.jsx';
 import HelpAdmin from '../help/HelpAdmin.jsx'
 import EcoNews from '../pages/EcoNews.jsx';
 import CarbonCalculator from '../pages/CarbonCalculator.jsx';
+import Chatbot from '@/components/chatbot/Chatbot.jsx';
+
+
 const routes = [
   {
     path: '/',
