@@ -7,6 +7,8 @@ import MapDisplay from "@/components/sidebar/MapDisplay";
 import mapboxgl from "mapbox-gl";
 import { useTheme } from "@/hooks/theme-provider";
 import { useLocation } from "react-router-dom";
+import { NavMain } from "@/components/sidebar/nav-main";
+import { FaTrash, FaEye, FaEyeSlash } from "react-icons/fa";
 
 mapboxgl.accessToken = "pk.eyJ1Ijoic3lsdmFpbmNvc3RlcyIsImEiOiJjbTNxZXNtN3cwa2hpMmpxdWd2cndhdnYwIn0.V2ZAp-BqZq6KIHQ6Lu8eAQ";
 
@@ -15,7 +17,11 @@ const fetchCoordinatesFromCity = async (city) => {
   try {
     const response = await fetch(url);
     const data = await response.json();
-    return data.features[0]?.center || null;
+    const coords = data.features[0]?.center || null;
+    if (coords && Array.isArray(coords) && coords.length === 2) {
+      return coords; // Assurez-vous que les coordonnées sont au format [lng, lat]
+    }
+    return null;
   } catch (error) {
     console.error(`Erreur lors de la récupération des coordonnées pour ${city}:`, error);
     return null;
@@ -25,10 +31,15 @@ const fetchCoordinatesFromCity = async (city) => {
 export default function Page() {
   const [startCoords, setStartCoords] = useState(null);
   const [endCoords, setEndCoords] = useState(null);
+  const [waypoints, setWaypoints] = useState([]); // Déclaration de setWaypoints
   const [transportMode, setTransportMode] = useState("driving");
   const [routeInstructions, setRouteInstructions] = useState([]);
-  const [pois, setPois] = useState({ hotel: [], restaurant: [], gas_station: [], park: [] });
   const [parcoursData, setParcoursData] = useState(null); // État pour les données GeoJSON
+  const [query, setQuery] = useState(""); // État pour le champ de saisie
+  const [suggestions, setSuggestions] = useState([]); // État pour les suggestions
+  const [showWaypoints, setShowWaypoints] = useState(true); // État pour contrôler la visibilité des villes de passage
+  const [showWaypointsBox, setShowWaypointsBox] = useState(true); // État pour contrôler la visibilité de la boîte des villes de passage
+  const [places, setPlaces] = useState([]); // Initialisez places avec un tableau vide
 
   const { theme } = useTheme();
   const isDarkMode = theme === "dark";
@@ -55,14 +66,115 @@ export default function Page() {
     initializeCoords();
   }, [startCity, endCity]);
 
+  // Ajoutez un autre useEffect pour mettre à jour le trajet
+  useEffect(() => {
+    fetchRoute(waypoints); // Appelez fetchRoute avec les waypoints actuels
+  }, [startCoords, endCoords, waypoints, transportMode]); // Ajoutez transportMode ici
 
-  const fetchRoute = async () => {
-    if (!startCoords || !endCoords) return;
+  useEffect(() => {
+    if (startCoords && endCoords) {
+      fetchRoute(waypoints); // Appelez fetchRoute avec les waypoints actuels
+    }
+  }, [startCoords, endCoords, waypoints, transportMode]); // Ajoutez transportMode ici
 
-    const url = `https://api.mapbox.com/directions/v5/mapbox/${transportMode}/${startCoords[0]},${startCoords[1]};${endCoords[0]},${endCoords[1]}?geometries=geojson&steps=true&access_token=${mapboxgl.accessToken}`;
+  const fetchSuggestions = async (query) => {
+    if (query.length < 3) {
+      setSuggestions([]); // Ne pas afficher de suggestions si la requête est trop courte
+      return;
+    }
+
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${mapboxgl.accessToken}`;
     try {
       const response = await fetch(url);
       const data = await response.json();
+      const results = data.features.map((feature) => ({
+        name: feature.place_name,
+        coords: feature.geometry.coordinates,
+      }));
+      setSuggestions(results); // Mettre à jour l'état avec les suggestions
+    } catch (error) {
+      console.error("Erreur lors de la récupération des suggestions :", error);
+    }
+  };
+
+  const handleQueryChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    fetchSuggestions(value); // Appeler la fonction pour récupérer les suggestions
+  };
+
+  const addWaypoint = (suggestion) => {
+    if (suggestion) {
+      const exists = waypoints.some((waypoint) => waypoint.name === suggestion.name);
+      if (exists) {
+        alert("Cette ville est déjà ajoutée comme point de passage.");
+        return;
+      }
+
+      // Ajoutez la ville à la liste des waypoints
+      setWaypoints((prevWaypoints) => {
+        const newWaypoints = [
+          ...prevWaypoints,
+          { name: suggestion.name, coords: suggestion.coords },
+        ];
+
+        // Mettre à jour le chemin après l'ajout
+        fetchRoute(newWaypoints); // Passez les nouveaux waypoints à fetchRoute
+
+        return newWaypoints;
+      });
+
+      // Créer un marqueur jaune sur la carte
+      const marker = new mapboxgl.Marker({ color: "yellow" })
+        .setLngLat(suggestion.coords)
+        .setPopup(new mapboxgl.Popup().setHTML(`<strong>${suggestion.name}</strong>`))
+        .addTo(mapRef.current);
+      
+      markersRef.current.push(marker); // Ajouter le marqueur à la référence
+
+      setQuery("");
+      setSuggestions([]);
+    }
+  };
+
+  const removeWaypoint = (index) => {
+    setWaypoints((prevWaypoints) => {
+      const newWaypoints = prevWaypoints.filter((_, i) => i !== index);
+      
+      if (markersRef.current[index]) {
+        markersRef.current[index].remove(); // Supprimez le marqueur de la carte
+        markersRef.current.splice(index, 1); // Supprimez le marqueur de la référence
+      }
+      
+      // Mettre à jour le chemin après la suppression
+      fetchRoute(newWaypoints); // Passez les nouveaux waypoints à fetchRoute
+
+      return newWaypoints;
+    });
+  };
+
+  const fetchRoute = async (waypointsToUse) => {
+    if (!startCoords || !endCoords) {
+      console.warn("Les coordonnées de départ ou d'arrivée ne sont pas définies.");
+      return; // Ne pas continuer si les coordonnées ne sont pas disponibles
+    }
+
+    const waypointCoords = waypointsToUse.map((waypoint) => waypoint.coords);
+    const routePath = [startCoords, ...waypointCoords, endCoords]
+        .map(([lng, lat]) => `${lng},${lat}`)
+        .join(";");
+
+    console.log("Coordonnées du trajet :", routePath); // Ajoutez cette ligne pour déboguer
+
+    const url = `https://api.mapbox.com/directions/v5/mapbox/${transportMode}/${routePath}?geometries=geojson&steps=true&access_token=${mapboxgl.accessToken}`;
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!data.routes || data.routes.length === 0) {
+        console.warn("Aucune route trouvée.");
+        return; // Ne pas continuer si aucune route n'est trouvée
+      }
 
       const route = data.routes[0]?.geometry;
       const steps = data.routes[0]?.legs[0]?.steps || [];
@@ -80,8 +192,6 @@ export default function Page() {
           paint: { "line-color": "#007bff", "line-width": 5 },
         });
 
-        mapRef.current.fitBounds([startCoords, endCoords], { padding: 50 });
-
         setRouteInstructions(
             steps.map((step) => ({
               instruction: step.maneuver.instruction,
@@ -90,48 +200,22 @@ export default function Page() {
             }))
         );
 
-        fetchPois(route); // Rechercher les POI
+        // Récupérer les hôtels à proximité du trajet
+        const hotels = await fetchNearbyHotels(waypointCoords);
+        addHotelMarkers(hotels); // Ajouter les marqueurs pour les hôtels
+
+        // Récupérer les établissements dans la ville d'arrivée
+        const arrivalPlaces = await fetchPlacesInCities([endCity]);
+        addHotelMarkers(arrivalPlaces); // Ajouter les marqueurs pour les établissements dans la ville d'arrivée
+
+        // Récupérer les établissements proches du trajet
+        const routeCoords = await getRouteCoordinates(startCoords, endCoords, waypointsToUse);
+        const nearbyPlaces = await fetchNearbyPlaces(routeCoords);
+        addHotelMarkers(nearbyPlaces); // Ajouter les marqueurs pour les établissements proches
       }
     } catch (error) {
-      console.error("Erreur lors de la récupération de l’itinéraire :", error);
+      console.error("Erreur lors de la récupération de l'itinéraire :", error);
     }
-  };
-
-  const fetchPois = async (geometry) => {
-    if (!geometry) return;
-
-    const bbox = calculateBoundingBox(geometry.coordinates);
-    const categories = ["hotel", "restaurant", "gas_station", "park"];
-    const poisByCategory = { hotel: [], restaurant: [], gas_station: [], park: [] };
-
-    clearMarkers(); // Nettoyer les anciens marqueurs
-
-    for (const category of categories) {
-      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${category}.json?bbox=${bbox.join(",")}&access_token=${mapboxgl.accessToken}`;
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.features) {
-          const filteredPois = filterPoisByProximity(
-              data.features.map((feature) => ({
-                name: feature.text,
-                coords: feature.geometry.coordinates,
-                category,
-              })),
-              geometry.coordinates,
-              5 // Distance maximale en kilomètres
-          );
-          poisByCategory[category] = filteredPois;
-        }
-      } catch (error) {
-        console.error(`Erreur lors de la récupération des POI pour ${category}:`, error);
-      }
-    }
-
-    setPois(poisByCategory); // Mettre à jour les POI dans le state
-    addMarkers(poisByCategory); // Ajouter les nouveaux marqueurs
-    // addParcoursMarkers(); // Ajouter les marqueurs pour les parcours
   };
 
   const addParcoursMarkers = (parcoursData) => {
@@ -140,7 +224,6 @@ export default function Page() {
     const map = mapRef.current;
     const allParcours = [];
   
-    // Préparation des données pour les clusters
     parcoursData.features.forEach((parcours) => {
       const { coordinates } = parcours.geometry;
       const { name, distance } = parcours.properties;
@@ -154,10 +237,15 @@ export default function Page() {
         },
         properties: {
           name,
-          distance, // Garder la distance pour l'affichage
+          distance,
         },
       });
     });
+  
+    // Vérifiez si la source existe déjà avant de l'ajouter
+    if (map.getSource('parcours')) {
+      map.removeSource('parcours');
+    }
   
     // Ajouter une source GeoJSON pour les clusters des parcours
     map.addSource('parcours', {
@@ -218,77 +306,6 @@ export default function Page() {
         'circle-radius': 15,
       },
     });
-  
-    // Événement de clic sur le cluster pour zoomer
-    map.on('click', 'parcours-cluster-count', (e) => {
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: ['parcours-cluster-count'],
-      });
-      const clusterId = features[0].properties.cluster_id;
-      map.getSource('parcours').getClusterExpansionZoom(clusterId, (err, zoom) => {
-        if (err) return;
-  
-        map.easeTo({
-          center: features[0].geometry.coordinates,
-          zoom: zoom,
-        });
-      });
-    });
-  
-    // Événement de clic sur les points individuels pour afficher un popup avec des détails
-    map.on('click', 'parcours-individual-points', (e) => {
-      const coordinates = e.features[0].geometry.coordinates.slice();
-      const name = e.features[0].properties.name;
-      const distance = e.features[0].properties.distance;
-  
-      // Conversion de la distance en kilomètres pour l'afficher dans le popup
-      const distanceInKm = (distance / 1000).toFixed(3);
-  
-      new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(`
-          <strong>${name}</strong><br>
-          <em>Distance: ${distanceInKm} km</em>
-        `)
-        .addTo(map);
-    });
-  };
-
-  const filterPoisByProximity = (pois, routeCoordinates, maxDistance) => {
-    return pois.filter((poi) => {
-      return routeCoordinates.some((coordinate) => {
-        const distance = calculateDistance(coordinate, poi.coords);
-        return distance <= maxDistance;
-      });
-    });
-  };
-
-  const calculateDistance = ([lng1, lat1], [lng2, lat2]) => {
-    const toRad = (deg) => (deg * Math.PI) / 180;
-    const R = 6371; // Rayon de la Terre en km
-    const dLat = toRad(lat2 - lat1);
-    const dLng = toRad(lng2 - lng1);
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  const calculateBoundingBox = (coordinates) => {
-    let minLng = Infinity,
-        minLat = Infinity,
-        maxLng = -Infinity,
-        maxLat = -Infinity;
-
-    coordinates.forEach(([lng, lat]) => {
-      if (lng < minLng) minLng = lng;
-      if (lat < minLat) minLat = lat;
-      if (lng > maxLng) maxLng = lng;
-      if (lat > maxLat) maxLat = lat;
-    });
-
-    return [minLng, minLat, maxLng, maxLat];
   };
 
   const clearMarkers = () => {
@@ -296,82 +313,217 @@ export default function Page() {
     markersRef.current = [];
   };
 
-  const addMarkers = (poisByCategory) => {
+  const fetchNearbyHotels = async (routeCoordinates) => {
+    if (!routeCoordinates || routeCoordinates.length === 0) return [];
+
+    const hotels = [];
+    
+    // Parcourez chaque segment de l'itinéraire
+    for (let i = 0; i < routeCoordinates.length - 1; i++) {
+      const [start, end] = [routeCoordinates[i], routeCoordinates[i + 1]];
+      const midLng = (start[0] + end[0]) / 2;
+      const midLat = (start[1] + end[1]) / 2;
+
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/hotel.json?proximity=${midLng},${midLat}&access_token=${mapboxgl.accessToken}`;
+
+      console.log("URL Mapbox :", url); // Ajoutez cette ligne pour déboguer
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.features) {
+          const segmentHotels = data.features.map((feature) => ({
+            name: feature.text || "Hôtel sans nom",
+            coords: feature.geometry.coordinates,
+          }));
+          hotels.push(...segmentHotels); // Ajouter les hôtels récupérés à la liste
+    } else {
+          console.warn("Aucun hôtel trouvé à proximité.");
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des hôtels :", error);
+      }
+    }
+
+    console.log("Hôtels récupérés le long du trajet :", hotels); // Affichez la liste des hôtels récupérés
+    return hotels; // Retourner la liste des hôtels
+  };
+
+  const addHotelMarkers = (places) => {
     const map = mapRef.current;
 
-    Object.keys(poisByCategory).forEach((category) => {
-      poisByCategory[category].forEach((poi) => {
-        if (!poi.coords || !poi.name) return;
+    if (!Array.isArray(places)) {
+      console.warn("Les établissements doivent être un tableau.");
+      return; // Ne pas continuer si places n'est pas un tableau
+    }
 
-        const marker = new mapboxgl.Marker({
-          color: category === "hotel"
-              ? "blue"
-              : category === "restaurant"
-                  ? "red"
-                  : category === "park"
-                      ? "green"
-                      : "orange",
-        })
-            .setLngLat(poi.coords)
-            .setPopup(
-                new mapboxgl.Popup().setHTML(`
-              <strong>${poi.name}</strong><br>
-              <em>${category}</em>
-            `)
-            )
-            .addTo(map);
+    // Supprimer les anciens marqueurs avant d'ajouter de nouveaux
+    clearMarkers();
 
-        markersRef.current.push(marker);
-      });
+    places.forEach((place) => {
+      const marker = new mapboxgl.Marker({ color: "blue" }) // Couleur pour les établissements
+        .setLngLat(place.coords)
+        .setPopup(new mapboxgl.Popup().setHTML(`<strong>${place.name}</strong>`))
+        .addTo(map);
+
+      markersRef.current.push(marker); // Ajouter le marqueur à la référence
     });
   };
 
+  const fetchPlacesInCities = async (cities) => {
+    const allPlaces = [];
+
+    for (const city of cities) {
+      const coords = await fetchCoordinatesFromCity(city);
+      if (!coords) continue; // Passer à la prochaine ville si les coordonnées ne sont pas disponibles
+
+      const [lng, lat] = coords;
+      const url = `https://api.mapbox.com/search/searchbox/v1/forward?q=${encodeURIComponent("restaurant")}&proximity=${lng},${lat}&access_token=${mapboxgl.accessToken}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.features) {
+          const places = data.features.map((feature) => ({
+            name: feature.properties.name || "Établissement sans nom",
+            coords: feature.geometry.coordinates,
+            description: feature.properties.description || "Aucune description disponible",
+            image: feature.properties.image || "URL_de_l_image_par_défaut.jpg",
+          }));
+          allPlaces.push(...places); // Ajouter les établissements récupérés à la liste
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des établissements :", error);
+      }
+    }
+
+    return allPlaces; // Retourner la liste de tous les établissements
+  };
+
+  const fetchNearbyPlaces = async (routeCoords) => {
+    const places = [];
+    for (const coord of routeCoords) {
+      const [lng, lat] = coord; // Décomposer les coordonnées
+      const url = `https://api.mapbox.com/search/searchbox/v1/forward?q=${encodeURIComponent("restaurant")}&proximity=${lng},${lat}&access_token=${mapboxgl.accessToken}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.features) {
+          const nearbyPlaces = data.features.map((feature) => ({
+            name: feature.properties.name || "Établissement sans nom",
+            coords: feature.geometry.coordinates,
+            description: feature.properties.description || "Aucune description disponible",
+            image: feature.properties.image || "URL_de_l_image_par_défaut.jpg",
+          }));
+          places.push(...nearbyPlaces); // Ajouter les établissements à la liste
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des établissements :", error);
+      }
+    }
+    return places; // Retourner la liste des établissements
+  };
+
   useEffect(() => {
-    // Charger le fichier GeoJSON
-    fetch("/data_extraction/marqueurs3.geojson")
-      .then((response) => response.json())
-      .then((data) => {
-        setParcoursData(data);
-        addParcoursMarkers(data); // Appeler la fonction pour ajouter les marqueurs
-      })
-      .catch((error) => console.error("Erreur lors de la récupération des données GeoJSON:", error));
-  
-    fetchRoute();
-  }, [startCoords, endCoords, transportMode]);
-  
-    return (
+    const fetchPlaces = async () => {
+      const cities = [endCity, ...waypoints.map(waypoint => waypoint.name)]; // Inclure la ville d'arrivée et les villes de passage
+      const placesInCities = await fetchPlacesInCities(cities);
+      setPlaces(placesInCities); // Mettez à jour l'état avec les établissements récupérés
+      addHotelMarkers(placesInCities); // Ajouter les marqueurs pour les établissements récupérés
+    };
+
+    fetchPlaces();
+  }, [endCoords, waypoints]); // Déclencher cet effet lorsque endCoords ou waypoints changent
+
+  return (
       <SidebarProvider>
         <AppSidebar
-          setStartCoords={setStartCoords}
-          setEndCoords={setEndCoords}
-          setTransportMode={setTransportMode}
-          transportMode={transportMode}
-          routeInstructions={routeInstructions}
-          pois={pois} // Ajout des POI dans la sidebar
+            setStartCoords={setStartCoords}
+            setEndCoords={setEndCoords}
+          waypoints={waypoints}
+          setWaypoints={setWaypoints}
+            setTransportMode={setTransportMode}
+            transportMode={transportMode}
+            routeInstructions={routeInstructions}
+            places={places}
+            startCoords={startCoords}
+            endCoords={endCoords}
         />
-    
+
         <SidebarInset>
-          {/* SidebarTrigger uniquement */}
           <div className="absolute top-2 left-2 z-10">
-            <SidebarTrigger className="p-2 rounded-full  shadow-md" />
+            <SidebarTrigger className="p-2 rounded-full shadow-md" />
           </div>
-    
-          {/* MapDisplay pour prendre tout l'espace */}
-          <div
-            className="flex flex-1 relative min-h-screen"
-            style={{ height: "100vh" }} // S'assure que la carte prend toute la hauteur
-          >
+
+          <div className="flex flex-1 relative min-h-screen" style={{ height: "100vh" }}>
             <MapDisplay
-              mapRef={mapRef}
-              mapContainerRef={mapContainerRef}
-              startCoords={startCoords}
-              endCoords={endCoords}
+                mapRef={mapRef}
+                mapContainerRef={mapContainerRef}
+                startCoords={startCoords}
+                endCoords={endCoords}
               isDarkMode={isDarkMode}
+                waypoints={waypoints}
             />
           </div>
+
+          {/* Boîte pour ajouter une ville de passage */}
+          {showWaypointsBox && ( // Affichez la boîte seulement si showWaypointsBox est vrai
+          <div className="absolute top-20 left-2 bg-white p-4 rounded shadow w-80">
+            <h4 className="font-semibold">Ajouter une ville (point de passage)</h4>
+            <div className="flex items-center mb-2">
+            <input
+                type="text"
+                placeholder="Ajouter une ville (point de passage)"
+                className="p-2 border border-gray-300 rounded w-full"
+                value={query}
+                onChange={handleQueryChange}
+            />
+            </div>
+            <ul className="mt-2 bg-gray-100 rounded shadow">
+              {suggestions.map((suggestion, index) => (
+                  <li
+                      key={index}
+                      className="p-2 cursor-pointer hover:bg-blue-100"
+                      onClick={() => addWaypoint(suggestion)}
+                  >
+                    {suggestion.name}
+                  </li>
+              ))}
+            </ul>
+
+            {/* Liste des villes de passage ajoutées */}
+            <div className="mt-4">
+              <h4 className="font-semibold">Villes de passage :</h4>
+              <ul className="mt-2">
+                {waypoints.map((waypoint, index) => (
+                  <li key={index} className="flex items-center justify-between p-2 bg-gray-200 rounded mb-2">
+                      <span>{waypoint.name}</span>
+                      <button
+                          onClick={() => removeWaypoint(index)}
+                          className="text-red-500 hover:underline"
+                      >
+                      <FaTrash />
+                      </button>
+                    </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          )}
+
+          {/* Icône d'œil fixe pour cacher ou afficher la boîte d'ajout de ville de passage */}
+          <button
+            onClick={() => setShowWaypointsBox((prev) => !prev)}
+            className="absolute top-20 left-10 text-blue-500"
+          >
+            {showWaypointsBox ? <FaEyeSlash /> : <FaEye />}
+          </button>
         </SidebarInset>
       </SidebarProvider>
-    );
-
-  };
+  );
+}
     

@@ -7,6 +7,10 @@ import Test from '../pages/Test.jsx';
 import Login from '../security/Login.jsx';
 import Register from '../security/Register.jsx';
 import HelpAdmin from '../help/HelpAdmin.jsx'
+import EcoNews from '../pages/EcoNews.jsx';
+import CarbonCalculator from '../pages/CarbonCalculator.jsx';
+import Chatbot from '@/components/chatbot/Chatbot.jsx';
+
 
 const routes = [
   {
@@ -26,6 +30,14 @@ const routes = [
         element: <MapPage />,
       },
       {
+        path: '/eco-news',
+        element: <EcoNews />,
+      },
+      {
+        path: '/carbon-footprint',
+        element: <CarbonCalculator />,
+      },
+      {
         path: '/login',
         element: <Login />,
       },
@@ -40,7 +52,11 @@ const routes = [
       {
         path: '/help-admin',
         element: <HelpAdmin />,
-      }
+      },
+      {
+        path: '/chatbot',
+        element: <Chatbot />,
+      },
     ],
   },
 ];
