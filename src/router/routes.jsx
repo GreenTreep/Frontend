@@ -1,17 +1,19 @@
-import Home from '../pages/Home.jsx';
 import { createBrowserRouter } from 'react-router-dom';
-import Error404 from '../pages/Error404.jsx';
+import HelpAdmin from '../help/HelpAdmin.jsx';
 import BaseLayout from '../layouts/BaseLayouts.jsx';
+import Error404 from '../pages/Error404.jsx';
+import HebergementsPage from '../pages/Hebergements.jsx';
+import Home from '../pages/Home.jsx';
 import MapPage from '../pages/Map.jsx';
+import Shop from '../pages/Shop.jsx';
 import Test from '../pages/Test.jsx';
 import Login from '../security/Login.jsx';
 import Register from '../security/Register.jsx';
-import HelpAdmin from '../help/HelpAdmin.jsx'
-import HebergementsPage from '../pages/Hebergements.jsx';
 
 
-import EcoNews from '../pages/EcoNews.jsx';
+
 import CarbonCalculator from '../pages/CarbonCalculator.jsx';
+import EcoNews from '../pages/EcoNews.jsx';
 const routes = [
   {
     path: '/',
