@@ -33,25 +33,23 @@ const Footer = () => {
                   to="/en-fr/about"
                   className="text-sm md:text-base lg:text-xl leading-7 md:leading-11 lg:leading-13 hover:opacity-70 transition duration-300 text-brand-dark dark:text-gray-200"
                 >
-                  A propos
+                  À propos
                 </Link>
               </li>
               <li>
                 <Link
-                  to="https://www.hellogetsafe.com/en-fr/press"
+                  to="/carbon-footprint"
                   className="text-sm md:text-base lg:text-xl leading-7 md:leading-11 lg:leading-13 hover:opacity-70 transition duration-300 text-brand-dark dark:text-gray-200"
-                  target="_blank"
-                  rel="noopener noreferrer"
                 >
-                  Blog
+                  Empreinte carbone
                 </Link>
               </li>
               <li>
                 <Link
-                  to="/en-fr/career"
+                  to="/eco-news"
                   className="text-sm md:text-base lg:text-xl leading-7 md:leading-11 lg:leading-13 hover:opacity-70 transition duration-300 text-brand-dark dark:text-gray-200"
                 >
-                  Forum
+                  Éco-actualités
                 </Link>
               </li>
             </ul>
@@ -59,19 +57,19 @@ const Footer = () => {
 
           {/* Section Get our App */}
           <div className="w-full md:w-1/2">
-            {/* Sélecteur de Région avec ShadCN Dropdown */}
+            {/* Sélecteur de Région */}
             <div className="mb-6">
               <label
                 htmlFor="regionDropdown"
                 className="block text-base md:text-lg lg:text-xl leading-7 md:leading-11 lg:leading-13 font-modern-era-medium text-brand-dark dark:text-white mb-2"
               >
-                Region
+                Région
               </label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     id="regionDropdown"
-                    aria-label="Region"
+                    aria-label="Région"
                     className="w-1/2 bg-neutral-900 dark:bg-neutral-700 flex items-center justify-between"
                   >
                     <span className="text-sm md:text-base lg:text-xl leading-7 md:leading-11 lg:leading-13 text-white">
@@ -96,7 +94,6 @@ const Footer = () => {
                   >
                     Suisse
                   </DropdownMenuItem>
-                  {/* Ajoutez d'autres régions si nécessaire */}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

@@ -7,15 +7,11 @@ import Test from '../pages/Test.jsx';
 import Login from '../security/Login.jsx';
 import Register from '../security/Register.jsx';
 import HelpAdmin from '../help/HelpAdmin.jsx'
-import Shop from '../pages/Shop.jsx';
-import Checkout from '../pages/Checkout.jsx';
-import Orders from '../pages/Orders.jsx'
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
+import HebergementsPage from '../pages/Hebergements.jsx';
 
 
-const stripePromise = loadStripe("cle_secrete");
-
+import EcoNews from '../pages/EcoNews.jsx';
+import CarbonCalculator from '../pages/CarbonCalculator.jsx';
 const routes = [
   {
     path: '/',
@@ -34,6 +30,18 @@ const routes = [
         element: <MapPage />,
       },
       {
+        path: '/eco-news',
+        element: <EcoNews />,
+      },
+      {
+        path: '/shop',
+        element: <Shop />
+      },
+      {
+        path: '/carbon-footprint',
+        element: <CarbonCalculator />,
+      },
+      {
         path: '/login',
         element: <Login />,
       },
@@ -42,28 +50,16 @@ const routes = [
         element: <Register />,
       },
       {
-        path: '*',
-        element: <Error404 />,
+        path: '/hebergements',
+        element: <HebergementsPage />,
       },
       {
         path: '/help-admin',
         element: <HelpAdmin />,
       },
       {
-        path: '/shop',
-        element: <Shop/>
-      },
-      {
-        path: "/checkout",
-        element: (
-          <Elements stripe={stripePromise}>
-            <Checkout />
-          </Elements>
-        )
-      },
-      {
-        path: '/orders',
-        element: <Orders/>
+        path: '*',
+        element: <Error404 />,
       }
     ],
   },

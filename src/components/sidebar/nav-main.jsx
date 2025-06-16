@@ -21,13 +21,14 @@ import {
 } from "@/components/ui/sidebar"
 import { NavItinerary } from "@/components/sidebar/NavItinerary"
 import { NavSettings } from "@/components/sidebar/NavSettings";
-import { FaSave } from "react-icons/fa";
+import { FaSave, FaBed } from "react-icons/fa";
 import mapboxgl from "mapbox-gl";
 
-export function NavMain({ items, setStartCoords, routeDuration, setEndCoords, setTransportMode, routeInstructions, transportMode, onSaveRoute, setWaypoints, addWaypointMarker, pois, places = [], startCoords, endCoords, waypoints }) {
-  const { state } = useSidebar(); // "expanded" ou "collapsed"
+export function NavMain({ items, setStartCoords, routeDuration, setEndCoords, setTransportMode, routeInstructions, transportMode, onSaveRoute, setWaypoints, addWaypointMarker, pois, places = [], startCoords, endCoords, waypoints, endCity }) {
+  const { state } = useSidebar();
+  const navigate = useNavigate();
 
-  console.log("Données reçues dans NavMain :", { startCoords, endCoords, waypoints, transportMode, routeInstructions }); // Pour déboguer
+  console.log("Données reçues dans NavMain :", { startCoords, endCoords, waypoints, transportMode, routeInstructions, endCity }); // Pour déboguer
 
   const handleSaveRoute = async () => {
     const routeData = {
@@ -39,6 +40,7 @@ export function NavMain({ items, setStartCoords, routeDuration, setEndCoords, se
     };
 
     try {
+      console.log(routeData);
       const response = await fetch('/api/save-route', {
         method: 'POST',
         headers: {
@@ -58,6 +60,50 @@ export function NavMain({ items, setStartCoords, routeDuration, setEndCoords, se
       console.error('Erreur:', error);
       alert('Échec de l\'enregistrement du trajet.');
     }
+  };
+
+  const handleHebergementsClick = () => {
+    console.log("Ville d'arrivée actuelle:", endCity); // Debug
+
+    // Vérifier si nous avons une ville de destination
+    if (!endCity || endCity.trim() === '') {
+      alert('Veuillez d\'abord définir une destination');
+      return;
+    }
+
+    // Créer un tableau des villes à rechercher
+    const cities = [];
+    
+    // Extraire le nom de la ville (avant la première virgule)
+    const cityName = endCity.split(',')[0].trim();
+    console.log("Nom de la ville extrait:", cityName); // Debug
+    
+    // Ajouter la ville de destination
+    cities.push(cityName);
+
+    // Ajouter les villes de passage
+    if (waypoints && waypoints.length > 0) {
+      waypoints.forEach(waypoint => {
+        if (waypoint.name) {
+          const waypointCity = waypoint.name.split(',')[0].trim();
+          cities.push(waypointCity);
+        }
+      });
+    }
+
+    // Vérifier si nous avons des villes à rechercher
+    if (cities.length === 0) {
+      alert('Aucune ville disponible pour la recherche d\'hébergements');
+      return;
+    }
+
+    console.log("Villes à rechercher:", cities); // Debug
+
+    // Encoder les villes pour l'URL
+    const citiesParam = encodeURIComponent(JSON.stringify(cities));
+    
+    // Rediriger vers la page d'hébergements
+    navigate(`/hebergements?cities=${citiesParam}`);
   };
 
   return (
