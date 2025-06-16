@@ -49,7 +49,11 @@ const routes = [
       {
         path: '/help-admin',
         element: <HelpAdmin />,
-      }
+      },
+      {
+        path: '/chatbot',
+        element: <Chatbot />,
+      },
     ],
   },
 ];
